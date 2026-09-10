@@ -1229,8 +1229,17 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
   .topbar__contact a:last-child { display: none; }
   .topbar { font-size: 12px; }
 
-  /* No celular o texto ocupa a largura toda, entao a sobreposicao
-     precisa ser uniforme em vez de concentrada a esquerda. */
+  /* No celular entra a imagem fixa no lugar do video */
+  .stage__media {
+    background-image: url("../assets/img/hero-mobile.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .stage__video { display: none; }
+
+  /* Com o texto ocupando a largura toda, a sobreposicao precisa
+     ser uniforme em vez de concentrada a esquerda. */
   .stage__scrim {
     background: linear-gradient(180deg,
       rgba(10, 12, 15, .66) 0%, rgba(10, 12, 15, .38) 26%,
@@ -1244,7 +1253,18 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
   .hero__actions .btn { flex: 1 1 auto; }
   .scroll-hint { display: none; }
 
-  .offer { min-height: 104vh; padding: 90px 0; }
+  /* A segunda tela recebe o ultimo frame: sem o video, e o que
+     mantem a leitura de obra bruta virando casa pronta. */
+  .offer {
+    min-height: 104vh;
+    padding: 90px 0;
+    background-image:
+      linear-gradient(180deg, rgba(10, 12, 15, .55) 0%, rgba(10, 12, 15, .45) 50%,
+                              rgba(10, 12, 15, .6) 100%),
+      url("../assets/img/offer-mobile.jpg");
+    background-size: cover;
+    background-position: center;
+  }
   .ticket-wrap { max-width: none; }
   /* Empilhado, a dobra passa a ser a borda picotada do canhoto:
      assim ela cai sempre na divisao real entre as duas partes. */

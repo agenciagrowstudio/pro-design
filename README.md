@@ -49,8 +49,10 @@ Detalhes que fazem isso funcionar:
 - o vídeo é recodificado com **um keyframe em cada frame** (`-g 1`), senão o seek trava;
 - depois de um segundo o arquivo é baixado inteiro e trocado por um blob local, o que
   elimina as requisições por range a cada movimento do scroll;
-- em telas de até 760px o vídeo roda em loop com o arquivo mais leve, porque o navegador
-  do celular limita o seek quadro a quadro;
+- em telas de até 760px não há vídeo nenhum: o `<video>` sai do DOM e o palco usa duas
+  imagens fixas, `hero-mobile.jpg` na primeira tela e `offer-mobile.jpg` (último frame) na
+  tela da oferta, mantendo a leitura de obra bruta virando casa pronta. O seek quadro a
+  quadro não fica fluido em aparelho móvel e ainda custaria megabytes de rede;
 - com `prefers-reduced-motion` o vídeo fica parado no primeiro frame;
 - o tween só é registrado depois que a duração do vídeo é conhecida, e a checagem usa
   `readyState` em vez de esperar apenas o evento `loadedmetadata`: com o arquivo em cache o

@@ -65,12 +65,17 @@
   function iniciarVideo() {
     if (!video || !stage) return;
 
-    // A fonte e escolhida aqui, e nao no atributo src do HTML,
-    // senao o celular comecaria a baixar o arquivo grande antes de
-    // o script trocar pelo leve. No celular o scroll controla o
-    // mesmo video, so que na versao mais leve.
-    var fonteMobile = video.getAttribute('data-src-mobile');
-    var fonte = (telaPequena && fonteMobile) ? fonteMobile : video.getAttribute('data-src');
+    // No celular o hero e uma imagem fixa, definida no CSS. O seek
+    // quadro a quadro nao fica fluido em aparelho movel e ainda
+    // custaria alguns megabytes de rede.
+    if (telaPequena) {
+      video.remove();
+      return;
+    }
+
+    // A fonte fica no data-src, e nao no src, para o download so
+    // comecar depois desta decisao.
+    var fonte = video.getAttribute('data-src');
     if (!fonte) return;
     video.setAttribute('src', fonte);
 
