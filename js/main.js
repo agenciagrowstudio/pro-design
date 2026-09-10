@@ -65,17 +65,14 @@
   function iniciarVideo() {
     if (!video || !stage) return;
 
-    // Em tela pequena o navegador limita o seek por scroll.
-    // Nesse caso o video roda em loop com o arquivo mais leve.
+    // A fonte e escolhida aqui, e nao no atributo src do HTML,
+    // senao o celular comecaria a baixar o arquivo grande antes de
+    // o script trocar pelo leve. No celular o scroll controla o
+    // mesmo video, so que na versao mais leve.
     var fonteMobile = video.getAttribute('data-src-mobile');
-    if (telaPequena && fonteMobile) {
-      video.setAttribute('src', fonteMobile);
-      video.loop = true;
-      video.autoplay = true;
-      video.muted = true;
-      video.play().catch(function () { /* autoplay bloqueado, fica o poster */ });
-      return;
-    }
+    var fonte = (telaPequena && fonteMobile) ? fonteMobile : video.getAttribute('data-src');
+    if (!fonte) return;
+    video.setAttribute('src', fonte);
 
     if (reduzirMovimento || !window.gsap || !window.ScrollTrigger) {
       // Sem animacao: mostra o primeiro frame parado
@@ -84,6 +81,11 @@
     }
 
     gsap.registerPlugin(ScrollTrigger);
+
+    // No celular a barra de endereco aparece e some durante a
+    // rolagem e muda a altura da viewport. Sem isto o ScrollTrigger
+    // recalcularia tudo no meio do movimento e o video saltaria.
+    ScrollTrigger.config({ ignoreMobileResize: true });
 
     var linha = gsap.timeline({
       defaults: { duration: 1 },
