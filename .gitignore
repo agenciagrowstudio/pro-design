@@ -13,3 +13,6 @@ desktop.ini
 # Logs e temporarios
 *.log
 *.tmp
+
+.vercel
+.env*
