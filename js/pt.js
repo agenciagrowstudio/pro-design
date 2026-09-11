@@ -184,7 +184,7 @@ window.TRADUCAO_PT = {
   'Drywall Taping': 'Rejunte de drywall',
   'Contact': 'Contato',
   'Painting and Remodeling. All rights reserved.': 'Pintura e Reformas. Todos os direitos reservados.',
-  'Provisional business information.': 'Dados da empresa provisórios.',
+  'Made by': 'Feito por',
 
   /* ---------- Textos que vivem em atributos ---------- */
   'Your name': 'Seu nome',
