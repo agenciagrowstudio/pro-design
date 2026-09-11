@@ -1817,11 +1817,13 @@ body.visor-aberto { overflow: hidden; }
   }
   .stage__video { display: none; }
 
-  /* No celular a cena fica limpa: sem veu sobre a foto e sem o
-     escurecimento do topo. O escuro aparece so atras do texto do
-     hero, logo abaixo. */
-  .stage__scrim { display: none; }
-  .stage__media::after { display: none; }
+  /* Com o texto ocupando a largura toda, a sobreposicao precisa
+     ser uniforme em vez de concentrada a esquerda. */
+  .stage__scrim {
+    background: linear-gradient(180deg,
+      rgba(10, 12, 15, .66) 0%, rgba(10, 12, 15, .38) 26%,
+      rgba(10, 12, 15, .42) 62%, rgba(10, 12, 15, .72) 100%);
+  }
 
   /* A casa pronta entra por cima da obra bruta conforme a rolagem.
      O script escreve --cena2 entre 0 e 1. */
@@ -1836,21 +1838,6 @@ body.visor-aberto { overflow: hidden; }
     background-repeat: no-repeat;
   }
 
-  /* Veu so atras do bloco de texto, e desvanecendo nas bordas:
-     sobre a madeira clara o texto branco sozinho nao se le. */
-  .hero__main { position: relative; }
-  .hero__main::before {
-    content: "";
-    position: absolute;
-    inset: -28px -26px -34px -26px;
-    z-index: -1;
-    border-radius: 34px;
-    background: radial-gradient(115% 92% at 38% 46%,
-      rgba(10, 12, 15, .88) 0%,
-      rgba(10, 12, 15, .7) 48%,
-      rgba(10, 12, 15, .28) 78%,
-      rgba(10, 12, 15, 0) 100%);
-  }
 
   .hero { padding-top: calc(var(--topbar-h) + var(--header-h) + 24px); padding-bottom: 96px; }
   .hero__text { font-size: 15.5px; }
