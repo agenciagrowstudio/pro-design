@@ -47,6 +47,9 @@
   /* Tipografia */
   --fonte-titulo: "Helvetica Neue", HelveticaNeue, Helvetica, Arial, sans-serif;
   --fonte-texto: "Plus Jakarta Sans", "Helvetica Neue", Arial, sans-serif;
+  /* So para o PRO da marca: a Archivo e variavel no eixo de
+     largura e o 125 e a versao mais aberta dela. */
+  --fonte-marca: "Archivo", "Helvetica Neue", Arial, sans-serif;
 
   /* Formas */
   --raio-sm: 10px;
@@ -415,6 +418,16 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
   font-size: 21px;
   letter-spacing: -.005em;
   line-height: 1;
+}
+/* O PRO sai expandido e o DESIGN fica na largura normal: a marca
+   ganha um contraste de largura, e nao so de peso. */
+.logo__name b,
+.footer__name b,
+.brand b {
+  font-family: var(--fonte-marca);
+  font-variation-settings: "wdth" 125;
+  font-weight: 700;
+  letter-spacing: -.005em;
 }
 .logo__name b { font-weight: 700; }
 
@@ -1838,6 +1851,54 @@ body.visor-aberto { overflow: hidden; }
   .header.is-solid .burger[aria-expanded="true"] { color: #fff; }
 }
 
+/* O cupom empilha antes das outras coisas: em duas colunas ele
+   precisa de largura, e no iPad em pe a chamada ficava com sete
+   linhas espremidas ao lado do numero. */
+@media (max-width: 900px) {
+  .ticket-wrap { max-width: none; }
+  /* Empilhado, a dobra passa a ser a borda picotada do canhoto:
+     assim ela cai sempre na divisao real entre as duas partes. */
+  .ticket {
+    grid-template-columns: minmax(0, 1fr);
+    border-radius: 20px;
+    -webkit-mask: none;
+    mask: none;
+  }
+  .ticket::after { display: none; }
+  .ticket__stub {
+    margin: 0 26px;
+    padding: 26px 0 30px;
+    border-top: 2px dashed rgba(255, 255, 255, .3);
+  }
+  /* Empilhado, a area do fundo fica alta: o veu passa a ser
+     vertical para o texto continuar legivel sobre a imagem. */
+  .ticket__main {
+    display: block;
+    padding: 30px 26px 26px;
+    background-image:
+      linear-gradient(180deg, rgba(14, 15, 19, .74) 0%, rgba(14, 15, 19, .58) 50%,
+                              rgba(14, 15, 19, .5) 100%),
+      url("../assets/img/offer-bg.jpg");
+    background-position: center, center;
+  }
+  /* Empilhado a margem negativa da versao larga nao serve: aqui
+     os termos vem logo abaixo da chamada. */
+  .ticket__desc { margin-top: 14px; margin-bottom: 0; max-width: none; }
+  /* Empilhado, o numero e a palavra ficam na mesma linha: em pe
+     um sobre o outro eles comiam metade da altura do cupom. */
+  .ticket__figure,
+  .ticket__word {
+    display: inline-block;
+    vertical-align: baseline;
+  }
+  .ticket__figure { font-size: 74px; }
+  .ticket__figure span { font-size: 34px; }
+  .ticket__word { font-size: 34px; margin: 0 0 0 14px; }
+  .ticket__barcode { height: 28px; margin-top: 16px; }
+  .ticket__terms--inline { margin-top: 20px; gap: 8px 16px; }
+  .ticket__form-title { font-size: 19px; margin: 12px 0 14px; }
+}
+
 @media (max-width: 760px) {
   :root { --topbar-h: 36px; }
   .topbar__promo .topbar__sep, .topbar__promo .topbar__muted { display: none; }
@@ -1893,48 +1954,6 @@ body.visor-aberto { overflow: hidden; }
     min-height: 100svh;
     padding: 56px 0;
   }
-  .ticket-wrap { max-width: none; }
-  /* Empilhado, a dobra passa a ser a borda picotada do canhoto:
-     assim ela cai sempre na divisao real entre as duas partes. */
-  .ticket {
-    grid-template-columns: minmax(0, 1fr);
-    border-radius: 20px;
-    -webkit-mask: none;
-    mask: none;
-  }
-  .ticket::after { display: none; }
-  .ticket__stub {
-    margin: 0 26px;
-    padding: 26px 0 30px;
-    border-top: 2px dashed rgba(255, 255, 255, .3);
-  }
-  /* Empilhado, a area do fundo fica alta: o veu passa a ser
-     vertical para o texto continuar legivel sobre a imagem. */
-  .ticket__main {
-    display: block;
-    padding: 30px 26px 26px;
-    background-image:
-      linear-gradient(180deg, rgba(14, 15, 19, .74) 0%, rgba(14, 15, 19, .58) 50%,
-                              rgba(14, 15, 19, .5) 100%),
-      url("../assets/img/offer-bg.jpg");
-    background-position: center, center;
-  }
-  /* Empilhado a margem negativa da versao larga nao serve: aqui
-     os termos vem logo abaixo da chamada. */
-  .ticket__desc { margin-top: 14px; margin-bottom: 0; max-width: none; }
-  /* Empilhado, o numero e a palavra ficam na mesma linha: em pe
-     um sobre o outro eles comiam metade da altura do cupom. */
-  .ticket__figure,
-  .ticket__word {
-    display: inline-block;
-    vertical-align: baseline;
-  }
-  .ticket__figure { font-size: 74px; }
-  .ticket__figure span { font-size: 34px; }
-  .ticket__word { font-size: 34px; margin: 0 0 0 14px; }
-  .ticket__barcode { height: 28px; margin-top: 16px; }
-  .ticket__terms--inline { margin-top: 20px; gap: 8px 16px; }
-  .ticket__form-title { font-size: 19px; margin: 12px 0 14px; }
   .offer__actions { width: 100%; flex-direction: column; }
   .section.stats-section { padding: 38px 0; }
   .stats { gap: 30px 0; }
