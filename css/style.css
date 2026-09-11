@@ -1079,7 +1079,7 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
   width: 100%;
   object-fit: cover;
   border-radius: 14px;
-  transition: box-shadow .3s var(--ease);
+  transition: box-shadow .3s var(--ease), opacity .18s linear;
 }
 .cat__btn:hover .cat__img { box-shadow: var(--sombra); }
 
@@ -1813,13 +1813,10 @@ body.visor-aberto { overflow: hidden; }
   }
   .stage__video { display: none; }
 
-  /* Com o texto ocupando a largura toda, a sobreposicao precisa
-     ser uniforme em vez de concentrada a esquerda. */
-  .stage__scrim {
-    background: linear-gradient(180deg,
-      rgba(10, 12, 15, .66) 0%, rgba(10, 12, 15, .38) 26%,
-      rgba(10, 12, 15, .42) 62%, rgba(10, 12, 15, .72) 100%);
-  }
+  /* No celular a cena fica limpa: sem veu sobre a foto e sem o
+     escurecimento do topo. */
+  .stage__scrim { display: none; }
+  .stage__media::after { display: none; }
 
   .hero { padding-top: calc(var(--topbar-h) + var(--header-h) + 24px); padding-bottom: 96px; }
   .hero__text { font-size: 15.5px; }
@@ -1834,10 +1831,7 @@ body.visor-aberto { overflow: hidden; }
     min-height: 100vh;
     min-height: 100svh;
     padding: 56px 0;
-    background-image:
-      linear-gradient(180deg, rgba(10, 12, 15, .55) 0%, rgba(10, 12, 15, .45) 50%,
-                              rgba(10, 12, 15, .6) 100%),
-      url("../assets/img/offer-mobile.jpg");
+    background-image: url("../assets/img/offer-mobile.jpg");
     background-size: cover;
     background-position: center;
   }

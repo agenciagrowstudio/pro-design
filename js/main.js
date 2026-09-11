@@ -490,6 +490,46 @@
       if (!botao || !fotos.length) return;
 
       botao.addEventListener('click', function () { abrirVisor(cartao, botao); });
+
+      // Passar o mouse folheia as fotos da categoria na propria
+      // capa. As imagens so sao baixadas no primeiro hover, para
+      // nao custar nada a quem apenas rola a pagina.
+      var capa = cartao.querySelector('.cat__img');
+      if (!capa || fotos.length < 2 || reduzirMovimento) return;
+
+      var original = capa.getAttribute('src');
+      var relogio = null;
+      var vez = 0;
+      var carregadas = false;
+
+      function preCarregar() {
+        if (carregadas) return;
+        carregadas = true;
+        fotos.forEach(function (f) { new Image().src = f.src; });
+      }
+
+      function trocar(src) {
+        capa.style.opacity = '0';
+        setTimeout(function () {
+          capa.setAttribute('src', src);
+          capa.style.opacity = '';
+        }, 180);
+      }
+
+      botao.addEventListener('mouseenter', function () {
+        preCarregar();
+        vez = 0;
+        relogio = setInterval(function () {
+          vez = (vez + 1) % fotos.length;
+          trocar(fotos[vez].src);
+        }, 1100);
+      });
+
+      botao.addEventListener('mouseleave', function () {
+        clearInterval(relogio);
+        relogio = null;
+        if (capa.getAttribute('src') !== original) trocar(original);
+      });
     });
 
     visor.querySelectorAll('[data-fechar]').forEach(function (el) {
