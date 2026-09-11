@@ -91,17 +91,25 @@
 
 <!-- ===== Barra superior ===== -->
 <div class="topbar">
+  <!-- Em tela larga os quatro avisos ficam lado a lado. No celular
+       nao cabem, entao passam um de cada vez, em rodizio. -->
   <div class="wrap topbar__inner">
-    <p class="topbar__promo">
-      <svg class="ico" aria-hidden="true"><use href="#i-percent"/></svg>
-      <strong>10% off your first project</strong>
-      <span class="topbar__sep">·</span>
-      <span class="topbar__muted">Free estimates, no obligation</span>
-    </p>
-    <div class="topbar__contact">
-      <a href="tel:+18573339140"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>(857) 333-9140</a>
-      <a href="https://maps.google.com/?q=32+Elm+St,+Uxbridge,+MA" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-map-pin"/></svg>32 Elm St, Uxbridge, MA</a>
-    </div>
+    <ul class="avisos" id="avisos">
+      <li class="aviso">
+        <svg class="ico" aria-hidden="true"><use href="#i-percent"/></svg>
+        <strong>10% off your first project</strong>
+      </li>
+      <li class="aviso aviso--fraco">
+        <svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>
+        Free estimates, no obligation
+      </li>
+      <li class="aviso">
+        <a href="tel:+18573339140"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>(857) 333-9140</a>
+      </li>
+      <li class="aviso">
+        <a href="https://maps.google.com/?q=32+Elm+St,+Uxbridge,+MA" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-map-pin"/></svg>32 Elm St, Uxbridge, MA</a>
+      </li>
+    </ul>
   </div>
 </div>
 

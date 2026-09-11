@@ -325,7 +325,60 @@
   }
 
   /* =======================================================
-     3. CABECALHO E MENU
+     3. AVISOS DO TOPO
+     No celular os quatro avisos nao cabem lado a lado, entao
+     passam um de cada vez. Para o rodizio quando o dedo ou o
+     teclado encostam na barra, e nao roda para quem pede menos
+     movimento.
+     ======================================================= */
+  var listaAvisos = document.getElementById('avisos');
+
+  if (listaAvisos && telaPequena) {
+    var avisos = Array.prototype.slice.call(listaAvisos.querySelectorAll('.aviso'));
+
+    if (avisos.length > 1) {
+      var vezAviso = 0;
+      var relogioAvisos = null;
+      var INTERVALO = 4200;
+
+      function mostrarAviso(i) {
+        avisos.forEach(function (a, n) { a.classList.toggle('is-ativo', n === i); });
+      }
+
+      function rodar() {
+        if (reduzirMovimento) return;
+        parar();
+        relogioAvisos = setInterval(function () {
+          vezAviso = (vezAviso + 1) % avisos.length;
+          mostrarAviso(vezAviso);
+        }, INTERVALO);
+      }
+
+      function parar() {
+        if (relogioAvisos) clearInterval(relogioAvisos);
+        relogioAvisos = null;
+      }
+
+      mostrarAviso(0);
+      rodar();
+
+      // Quem parou para ler ou tocou num telefone nao quer que a
+      // barra troque no meio
+      listaAvisos.addEventListener('pointerenter', parar);
+      listaAvisos.addEventListener('pointerleave', rodar);
+      listaAvisos.addEventListener('focusin', parar);
+      listaAvisos.addEventListener('focusout', rodar);
+
+      // Fora da aba, o rodizio nao precisa continuar
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) parar();
+        else rodar();
+      });
+    }
+  }
+
+  /* =======================================================
+     4. CABECALHO E MENU
      ======================================================= */
   var header = document.getElementById('header');
   var nav = document.getElementById('nav');
@@ -379,7 +432,7 @@
   }
 
   /* =======================================================
-     4. ROLAGEM SUAVE DAS ANCORAS
+     5. ROLAGEM SUAVE DAS ANCORAS
      Feita aqui, e nao com scroll-behavior no CSS, porque a
      rolagem animada por CSS atrapalha as medicoes do
      ScrollTrigger e desalinha o video do hero.
@@ -408,7 +461,7 @@
   });
 
   /* =======================================================
-     5. LINK ATIVO CONFORME A SECAO NA TELA
+     6. LINK ATIVO CONFORME A SECAO NA TELA
      ======================================================= */
   var links = Array.prototype.slice.call(document.querySelectorAll('.nav__link'));
   var alvos = links
@@ -430,7 +483,7 @@
   }
 
   /* =======================================================
-     6. GALERIA POR CATEGORIA
+     7. GALERIA POR CATEGORIA
      Cada cartao guarda a propria lista de fotos em uma <ul>
      escondida. O visualizador e um so, e e montado na hora com
      a lista do cartao que foi aberto.
@@ -607,7 +660,7 @@
   }
 
   /* =======================================================
-     7. CONTAGEM DOS NUMEROS
+     8. CONTAGEM DOS NUMEROS
      Sobem de zero ate o valor quando a faixa entra na tela,
      uma vez so. Quem pede menos movimento ve o numero final
      direto, sem contagem.
@@ -651,7 +704,7 @@
   }
 
   /* =======================================================
-     8. MURAL DOS DEPOIMENTOS
+     9. MURAL DOS DEPOIMENTOS
      As fotos assentam uma a uma, em ordem sorteada, quando a
      secao chega na tela. Depois disso cada foto acompanha o
      cursor de leve, como um ima de alcance curto.
@@ -709,7 +762,7 @@
   }
 
   /* =======================================================
-     9. TITULOS: entrada e paralaxe
+     10. TITULOS: entrada e paralaxe
      Cada titulo sobe alguns pixels ao aparecer e, depois disso,
      acompanha a rolagem com um deslocamento curto. O movimento
      e pequeno de proposito: e para dar profundidade, nao para
@@ -776,7 +829,7 @@
   }
 
   /* =======================================================
-     10. FAQ: uma pergunta aberta por vez
+     11. FAQ: uma pergunta aberta por vez
      ======================================================= */
   var perguntas = Array.prototype.slice.call(document.querySelectorAll('.qa'));
 
@@ -836,7 +889,7 @@
   });
 
   /* =======================================================
-     11. FORMULARIOS DE ORCAMENTO
+     12. FORMULARIOS DE ORCAMENTO
      Vale para os dois: o curto, no canhoto do cupom, e o
      completo, na secao Contact. Sem backend, monta a mensagem
      e abre o cliente de email. Com data-endpoint preenchido,
