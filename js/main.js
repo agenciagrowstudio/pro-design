@@ -62,128 +62,14 @@
     }
   }
 
-  /* No celular, no lugar do video: uma sequencia de imagens
-     desenhada em canvas. O scroll escolhe o quadro, entao o
-     movimento acompanha o dedo sem depender do decodificador
-     de video do aparelho, que era o que travava antes. */
-  function iniciarFramesMobile() {
-    var canvas = document.getElementById('heroFrames');
-    if (!canvas || !stage || reduzirMovimento) return;
-    if (!window.gsap || !window.ScrollTrigger) return;
-
-    var total = parseInt(canvas.getAttribute('data-total'), 10) || 0;
-    if (!total) return;
-
-    var ctx = canvas.getContext('2d');
-    var quadros = new Array(total);
-    var prontos = new Array(total);
-    var desenhado = -1;
-    var ultimoProgresso = 0;
-    var revelado = false;
-
-    function caminho(i) {
-      return 'assets/frames/f' + (i < 9 ? '0' : '') + (i + 1) + '.webp';
-    }
-
-    // O quadro pedido pode ainda nao ter chegado: nesse caso vale
-    // o mais proximo que ja esta em memoria, para o movimento
-    // nunca parar enquanto o resto baixa.
-    function maisProximoPronto(alvo) {
-      if (prontos[alvo]) return alvo;
-      for (var d = 1; d < total; d++) {
-        if (alvo - d >= 0 && prontos[alvo - d]) return alvo - d;
-        if (alvo + d < total && prontos[alvo + d]) return alvo + d;
-      }
-      return -1;
-    }
-
-    function desenhar(progresso) {
-      ultimoProgresso = progresso;
-      var alvo = Math.round(progresso * (total - 1));
-      if (alvo < 0) alvo = 0;
-      if (alvo > total - 1) alvo = total - 1;
-
-      var i = maisProximoPronto(alvo);
-      if (i < 0 || i === desenhado) return;
-
-      var img = quadros[i];
-      var escala = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
-      var w = img.naturalWidth * escala;
-      var h = img.naturalHeight * escala;
-      ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
-      desenhado = i;
-    }
-
-    // O canvas tem a resolucao da tela vezes o DPR, limitado a 2:
-    // acima disso o ganho nao se ve e o desenho comeca a pesar.
-    function dimensionar() {
-      var caixa = canvas.getBoundingClientRect();
-      if (!caixa.width || !caixa.height) return;
-      var dpr = Math.min(window.devicePixelRatio || 1, 2);
-      var w = Math.round(caixa.width * dpr);
-      var h = Math.round(caixa.height * dpr);
-      if (w === canvas.width && h === canvas.height) return;
-      canvas.width = w;
-      canvas.height = h;
-      desenhado = -1;
-      desenhar(ultimoProgresso);
-    }
-
-    function carregar(i, aoTerminar) {
-      var img = new Image();
-      img.decoding = 'async';
-      img.onload = function () {
-        quadros[i] = img;
-        prontos[i] = true;
-        if (!revelado) {
-          revelado = true;
-          stage.classList.add('tem-frames');
-          dimensionar();
-        }
-        desenhar(ultimoProgresso);
-        if (aoTerminar) aoTerminar();
-      };
-      img.onerror = function () { if (aoTerminar) aoTerminar(); };
-      img.src = caminho(i);
-    }
-
-    // Em fila, e nao todos de uma vez: um celular em rede fraca
-    // entregaria os 32 pedidos ao mesmo tempo e o primeiro quadro
-    // demoraria tanto quanto o ultimo.
-    function carregarEmFila(i) {
-      if (i >= total) return;
-      carregar(i, function () { carregarEmFila(i + 1); });
-    }
-
-    carregar(0, function () { carregarEmFila(1); });
-
-    gsap.registerPlugin(ScrollTrigger);
-    ScrollTrigger.config({ ignoreMobileResize: true });
-
-    ScrollTrigger.create({
-      trigger: stage,
-      start: 'top top',
-      end: 'bottom bottom',
-      scrub: true,
-      onUpdate: function (self) {
-        desenhar(self.progress);
-        atualizarProgresso(self.progress);
-      }
-    });
-
-    window.addEventListener('resize', dimensionar);
-    window.addEventListener('orientationchange', dimensionar);
-  }
-
   function iniciarVideo() {
     if (!video || !stage) return;
 
-    // No celular o <video> sai de cena: o seek quadro a quadro nao
-    // fica fluido em aparelho movel. O mesmo movimento roda como
-    // sequencia de imagens desenhada em canvas.
+    // No celular o hero e uma imagem fixa, definida no CSS. O seek
+    // quadro a quadro nao fica fluido em aparelho movel e ainda
+    // custaria alguns megabytes de rede.
     if (telaPequena) {
       video.remove();
-      iniciarFramesMobile();
       return;
     }
 
@@ -256,7 +142,147 @@
   }
 
   /* =======================================================
-     2. CABECALHO E MENU
+     2. IDIOMA
+     O site nasce em ingles. Ao passar para portugues o script
+     percorre os nos de texto da pagina e troca cada trecho que
+     estiver no dicionario de js/pt.js. O texto original fica
+     guardado no proprio no, entao voltar ao ingles e so
+     restaurar, sem precisar de um segundo dicionario.
+     ======================================================= */
+  var dicionario = window.TRADUCAO_PT || {};
+  var seletorIdioma = document.querySelector('.idioma');
+  var CHAVE_IDIOMA = 'prodesign-idioma';
+  var idiomaAtual = 'en';
+
+  // Texto que o script escreve na hora, e nao o que ja esta no
+  // HTML, precisa ser refeito quando o idioma muda. Quem gera
+  // texto assim se inscreve aqui.
+  var aoTrocarIdioma = [];
+
+  // Guarda o texto em ingles na primeira troca
+  var originais = new WeakMap();
+
+  // Atributos que carregam texto visivel ou lido em voz alta
+  var ATRIBUTOS = ['placeholder', 'aria-label', 'title', 'content'];
+
+  function textoDaPagina() {
+    var nos = [];
+    var caminhante = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (no) {
+        var pai = no.parentNode;
+        if (!pai) return NodeFilter.FILTER_REJECT;
+        var tag = pai.nodeName;
+        if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'NOSCRIPT') return NodeFilter.FILTER_REJECT;
+        // Texto que o proprio script escreve ja sai no idioma
+        // certo: passar por aqui so o marcaria como sem traducao
+        if (pai.closest && pai.closest('[data-sem-traducao]')) return NodeFilter.FILTER_REJECT;
+        return no.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+    var atual;
+    while ((atual = caminhante.nextNode())) nos.push(atual);
+    return nos;
+  }
+
+  // Um paragrafo quebrado em varias linhas no HTML chega aqui com
+  // as quebras e a indentacao no meio do texto. A chave do
+  // dicionario e sempre a versao de uma linha so.
+  function normalizar(texto) {
+    return texto.replace(/\s+/g, ' ').trim();
+  }
+
+  window.TRADUCAO_FALTANDO = [];
+
+  function trocarTexto(no, paraPortugues) {
+    if (!originais.has(no)) originais.set(no, no.nodeValue);
+    var original = originais.get(no);
+
+    if (!paraPortugues) {
+      no.nodeValue = original;
+      return;
+    }
+
+    var chave = normalizar(original);
+    if (!chave) return;
+
+    var traducao = dicionario[chave];
+    if (!traducao) {
+      // Fica registrado para quem for dar manutencao, sem sujar
+      // o console de quem so esta visitando o site
+      if (window.TRADUCAO_FALTANDO.indexOf(chave) === -1) {
+        window.TRADUCAO_FALTANDO.push(chave);
+      }
+      return;
+    }
+
+    // O espaco em volta e da diagramacao do HTML e precisa ficar
+    var antes = original.match(/^\s*/)[0];
+    var depois = original.match(/\s*$/)[0];
+    no.nodeValue = antes + traducao + depois;
+  }
+
+  function trocarAtributos(paraPortugues) {
+    ATRIBUTOS.forEach(function (attr) {
+      document.querySelectorAll('[' + attr + ']').forEach(function (el) {
+        var guardado = el.getAttribute('data-orig-' + attr);
+        var atual = el.getAttribute(attr);
+
+        if (guardado === null) {
+          el.setAttribute('data-orig-' + attr, atual);
+          guardado = atual;
+        }
+
+        if (!paraPortugues) {
+          el.setAttribute(attr, guardado);
+          return;
+        }
+        var traducao = dicionario[normalizar(guardado)];
+        if (traducao) el.setAttribute(attr, traducao);
+      });
+    });
+  }
+
+  function aplicarIdioma(idioma) {
+    var pt = idioma === 'pt';
+    idiomaAtual = idioma;
+
+    textoDaPagina().forEach(function (no) { trocarTexto(no, pt); });
+    trocarAtributos(pt);
+
+    var titulo = document.querySelector('title');
+    if (titulo) trocarTexto(titulo.firstChild, pt);
+
+    document.documentElement.setAttribute('lang', pt ? 'pt-BR' : 'en');
+
+    if (seletorIdioma) {
+      seletorIdioma.setAttribute('data-ativo', idioma);
+      seletorIdioma.querySelectorAll('.idioma__op').forEach(function (b) {
+        var ativo = b.getAttribute('data-idioma') === idioma;
+        b.classList.toggle('is-ativa', ativo);
+        b.setAttribute('aria-pressed', ativo ? 'true' : 'false');
+      });
+    }
+
+    aoTrocarIdioma.forEach(function (fn) { fn(idioma); });
+
+    try { localStorage.setItem(CHAVE_IDIOMA, idioma); } catch (e) { /* navegacao privada */ }
+  }
+
+  if (seletorIdioma) {
+    seletorIdioma.addEventListener('click', function (e) {
+      var botao = e.target.closest('.idioma__op');
+      if (!botao) return;
+      aplicarIdioma(botao.getAttribute('data-idioma'));
+    });
+
+    var salvo = null;
+    try { salvo = localStorage.getItem(CHAVE_IDIOMA); } catch (e) { /* sem acesso */ }
+    if (salvo === 'pt') aplicarIdioma('pt');
+    else seletorIdioma.setAttribute('data-ativo', 'en');
+  }
+
+  /* =======================================================
+     3. CABECALHO E MENU
      ======================================================= */
   var header = document.getElementById('header');
   var nav = document.getElementById('nav');
@@ -310,7 +336,7 @@
   }
 
   /* =======================================================
-     3. ROLAGEM SUAVE DAS ANCORAS
+     4. ROLAGEM SUAVE DAS ANCORAS
      Feita aqui, e nao com scroll-behavior no CSS, porque a
      rolagem animada por CSS atrapalha as medicoes do
      ScrollTrigger e desalinha o video do hero.
@@ -339,7 +365,7 @@
   });
 
   /* =======================================================
-     4. LINK ATIVO CONFORME A SECAO NA TELA
+     5. LINK ATIVO CONFORME A SECAO NA TELA
      ======================================================= */
   var links = Array.prototype.slice.call(document.querySelectorAll('.nav__link'));
   var alvos = links
@@ -361,32 +387,246 @@
   }
 
   /* =======================================================
-     5. FILTROS DA GALERIA
+     6. GALERIA POR CATEGORIA
+     Cada cartao guarda a propria lista de fotos em uma <ul>
+     escondida. O visualizador e um so, e e montado na hora com
+     a lista do cartao que foi aberto.
      ======================================================= */
-  var filtros = document.querySelectorAll('.filters__btn');
-  var fotos = document.querySelectorAll('.shot');
+  var visor = document.getElementById('visor');
+  var visorImg = document.getElementById('visorImg');
+  var visorTitulo = document.getElementById('visorTitulo');
+  var visorContador = document.getElementById('visorContador');
+  var visorPontos = document.getElementById('visorPontos');
 
-  filtros.forEach(function (botao) {
-    botao.addEventListener('click', function () {
-      var alvo = botao.getAttribute('data-filter');
+  var album = [];
+  var indice = 0;
+  var origem = null;
 
-      filtros.forEach(function (b) {
-        var ativo = b === botao;
-        b.classList.toggle('is-active', ativo);
-        b.setAttribute('aria-selected', ativo ? 'true' : 'false');
-      });
+  function lerFotos(cartao) {
+    var itens = cartao.querySelectorAll('.cat__fotos li');
+    return Array.prototype.map.call(itens, function (li) {
+      return {
+        src: li.getAttribute('data-src'),
+        alt: li.getAttribute('data-alt') || ''
+      };
+    }).filter(function (f) { return f.src; });
+  }
 
-      fotos.forEach(function (foto) {
-        var mostrar = alvo === 'all' || foto.getAttribute('data-cat') === alvo;
-        foto.classList.toggle('is-hidden', !mostrar);
-      });
-
-      if (window.ScrollTrigger) ScrollTrigger.refresh();
+  function montarPontos() {
+    visorPontos.innerHTML = '';
+    album.forEach(function (_, i) {
+      var li = document.createElement('li');
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'visor__ponto';
+      b.setAttribute('aria-label', 'Photo ' + (i + 1));
+      b.addEventListener('click', function () { mostrar(i); });
+      li.appendChild(b);
+      visorPontos.appendChild(li);
     });
-  });
+  }
+
+  function mostrar(i) {
+    if (!album.length) return;
+    // Circular: do ultimo volta para o primeiro
+    indice = (i + album.length) % album.length;
+
+    var foto = album[indice];
+    visorImg.setAttribute('src', foto.src);
+    visorImg.setAttribute('alt', foto.alt);
+    visorContador.textContent = (indice + 1) + ' / ' + album.length;
+
+    visorPontos.querySelectorAll('.visor__ponto').forEach(function (b, n) {
+      b.classList.toggle('is-ativa', n === indice);
+      if (n === indice) b.setAttribute('aria-current', 'true');
+      else b.removeAttribute('aria-current');
+    });
+  }
+
+  function abrirVisor(cartao, botao) {
+    album = lerFotos(cartao);
+    if (!album.length) return;
+
+    origem = botao;
+    visorTitulo.textContent = botao.getAttribute('data-cat-nome') || '';
+    visor.classList.toggle('tem-uma', album.length < 2);
+    montarPontos();
+    mostrar(0);
+
+    visor.hidden = false;
+    document.body.classList.add('visor-aberto');
+    var fechar = visor.querySelector('.visor__fechar');
+    if (fechar) fechar.focus();
+  }
+
+  function fecharVisor() {
+    if (visor.hidden) return;
+    visor.hidden = true;
+    document.body.classList.remove('visor-aberto');
+    visorImg.removeAttribute('src');
+    // O foco volta para o cartao que abriu, senao ele cairia no topo
+    if (origem) origem.focus();
+    origem = null;
+  }
+
+  if (visor) {
+    document.querySelectorAll('.cat').forEach(function (cartao) {
+      var botao = cartao.querySelector('.cat__btn');
+      var qtd = cartao.querySelector('.cat__qtd');
+      var fotos = lerFotos(cartao);
+
+      // O contador sai da propria lista: assim nao ha numero
+      // escrito na mao para desencontrar quando as fotos mudarem.
+      function escreverContador(idioma) {
+        if (!qtd) return;
+        var unidade = idioma === 'pt'
+          ? (fotos.length === 1 ? ' foto' : ' fotos')
+          : (fotos.length === 1 ? ' photo' : ' photos');
+        qtd.textContent = fotos.length + unidade;
+      }
+
+      escreverContador(idiomaAtual);
+      aoTrocarIdioma.push(escreverContador);
+      if (!botao || !fotos.length) return;
+
+      botao.addEventListener('click', function () { abrirVisor(cartao, botao); });
+    });
+
+    visor.querySelectorAll('[data-fechar]').forEach(function (el) {
+      el.addEventListener('click', fecharVisor);
+    });
+
+    visor.querySelectorAll('[data-passo]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        mostrar(indice + parseInt(el.getAttribute('data-passo'), 10));
+      });
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (visor.hidden) return;
+      if (e.key === 'Escape') fecharVisor();
+      else if (e.key === 'ArrowRight') mostrar(indice + 1);
+      else if (e.key === 'ArrowLeft') mostrar(indice - 1);
+    });
+
+    // Arrastar o dedo troca a foto no celular
+    var toqueX = null;
+    visor.addEventListener('touchstart', function (e) {
+      toqueX = e.changedTouches[0].clientX;
+    }, { passive: true });
+
+    visor.addEventListener('touchend', function (e) {
+      if (toqueX === null) return;
+      var distancia = e.changedTouches[0].clientX - toqueX;
+      toqueX = null;
+      if (Math.abs(distancia) > 45) mostrar(indice + (distancia < 0 ? 1 : -1));
+    }, { passive: true });
+  }
 
   /* =======================================================
-     6. FAQ: uma pergunta aberta por vez
+     7. CONTAGEM DOS NUMEROS
+     Sobem de zero ate o valor quando a faixa entra na tela,
+     uma vez so. Quem pede menos movimento ve o numero final
+     direto, sem contagem.
+     ======================================================= */
+  var numeros = document.querySelectorAll('.stats__num');
+
+  function contar(alvo) {
+    // O primeiro no e o numero; o <span> ao lado guarda o sinal
+    var no = alvo.firstChild;
+    if (!no || no.nodeType !== 3) return;
+
+    var destino = parseInt(no.nodeValue.replace(/\D/g, ''), 10);
+    if (isNaN(destino)) return;
+
+    var duracao = 1400;
+    var inicio = null;
+
+    function passo(agora) {
+      if (inicio === null) inicio = agora;
+      var t = Math.min(1, (agora - inicio) / duracao);
+      // Desacelera no fim, para o numero assentar em vez de parar seco
+      var suave = 1 - Math.pow(1 - t, 3);
+      no.nodeValue = String(Math.round(destino * suave));
+      if (t < 1) requestAnimationFrame(passo);
+    }
+
+    no.nodeValue = '0';
+    requestAnimationFrame(passo);
+  }
+
+  if (numeros.length && !reduzirMovimento && 'IntersectionObserver' in window) {
+    var olho = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (entrada) {
+        if (!entrada.isIntersecting) return;
+        olho.unobserve(entrada.target);
+        contar(entrada.target);
+      });
+    }, { threshold: 0.6 });
+
+    numeros.forEach(function (n) { olho.observe(n); });
+  }
+
+  /* =======================================================
+     8. MURAL DOS DEPOIMENTOS
+     As fotos assentam uma a uma, em ordem sorteada, quando a
+     secao chega na tela. Depois disso cada foto acompanha o
+     cursor de leve, como um ima de alcance curto.
+     ======================================================= */
+  var mural = document.querySelector('.depo__mural');
+
+  if (mural && !reduzirMovimento) {
+    var fotosMural = Array.prototype.slice.call(mural.querySelectorAll('img'));
+
+    // Cada foto recebe o proprio atraso: em ordem elas entrariam
+    // como uma cortina, e a ideia e parecer que foram colocadas
+    // na parede uma de cada vez.
+    fotosMural.forEach(function (foto) {
+      foto.style.transitionDelay = (Math.random() * 0.5).toFixed(2) + 's';
+    });
+
+    if ('IntersectionObserver' in window) {
+      var olhoMural = new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (entrada) {
+          if (!entrada.isIntersecting) return;
+          olhoMural.unobserve(entrada.target);
+          mural.classList.add('is-dentro');
+
+          // O atraso serviu para a entrada. Mantido, ele atrasaria
+          // tambem a resposta ao cursor.
+          setTimeout(function () {
+            fotosMural.forEach(function (foto) { foto.style.transitionDelay = ''; });
+          }, 1400);
+        });
+      }, { threshold: 0.15 });
+
+      olhoMural.observe(mural);
+    } else {
+      mural.classList.add('is-dentro');
+    }
+
+    // Ima: a foto anda no maximo alguns pixels na direcao do
+    // cursor, e volta sozinha quando ele sai.
+    var ALCANCE = 14;
+
+    fotosMural.forEach(function (foto) {
+      foto.addEventListener('mousemove', function (e) {
+        var caixa = foto.getBoundingClientRect();
+        var x = (e.clientX - caixa.left) / caixa.width - 0.5;
+        var y = (e.clientY - caixa.top) / caixa.height - 0.5;
+        foto.style.transform =
+          'translate(' + (x * ALCANCE).toFixed(1) + 'px, ' +
+          (y * ALCANCE).toFixed(1) + 'px) scale(1.03)';
+      });
+
+      foto.addEventListener('mouseleave', function () {
+        foto.style.transform = '';
+      });
+    });
+  }
+
+  /* =======================================================
+     9. FAQ: uma pergunta aberta por vez
      ======================================================= */
   var perguntas = document.querySelectorAll('.qa');
   perguntas.forEach(function (item) {
@@ -399,7 +639,7 @@
   });
 
   /* =======================================================
-     7. FORMULARIOS DE ORCAMENTO
+     10. FORMULARIOS DE ORCAMENTO
      Vale para os dois: o curto, no canhoto do cupom, e o
      completo, na secao Contact. Sem backend, monta a mensagem
      e abre o cliente de email. Com data-endpoint preenchido,

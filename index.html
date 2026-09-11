@@ -60,6 +60,19 @@
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
   <symbol id="i-percent" viewBox="0 0 24 24"><path d="M19 5 5 19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></symbol>
   <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-bandeira-eua" viewBox="0 0 24 24" fill="none" stroke="none">
+    <rect width="24" height="24" fill="#f5f5f5"/>
+    <g fill="#b22234"><rect y="0" width="24" height="1.85"/><rect y="3.7" width="24" height="1.85"/><rect y="7.4" width="24" height="1.85"/><rect y="11.1" width="24" height="1.85"/><rect y="14.8" width="24" height="1.85"/><rect y="18.5" width="24" height="1.85"/><rect y="22.2" width="24" height="1.8"/></g>
+    <rect width="11.5" height="12.95" fill="#3c3b6e"/>
+    <g fill="#fff"><circle cx="2.3" cy="2.2" r=".85"/><circle cx="5.8" cy="2.2" r=".85"/><circle cx="9.3" cy="2.2" r=".85"/><circle cx="4" cy="4.8" r=".85"/><circle cx="7.6" cy="4.8" r=".85"/><circle cx="2.3" cy="7.4" r=".85"/><circle cx="5.8" cy="7.4" r=".85"/><circle cx="9.3" cy="7.4" r=".85"/><circle cx="4" cy="10.1" r=".85"/><circle cx="7.6" cy="10.1" r=".85"/></g>
+  </symbol>
+  <symbol id="i-bandeira-brasil" viewBox="0 0 24 24" fill="none" stroke="none">
+    <rect width="24" height="24" fill="#009b3a"/>
+    <path d="M12 3.2 21.4 12 12 20.8 2.6 12z" fill="#fedf00"/>
+    <circle cx="12" cy="12" r="4.1" fill="#002776"/>
+    <path d="M8.3 10.4a11 11 0 0 1 7.5 2.4 4.1 4.1 0 0 1-.2.9 10 10 0 0 0-7.6-2.4z" fill="#fff"/>
+  </symbol>
+  <symbol id="i-star" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M11.5 2.3a.55.55 0 0 1 1 0l2.5 5.9 6.3.6c.5 0 .7.6.3.9l-4.8 4.2 1.4 6.2c.1.5-.4.9-.9.6L12 17.4l-5.3 3.3c-.5.3-1-.1-.9-.6l1.4-6.2-4.8-4.2c-.4-.3-.2-.9.3-.9l6.3-.6z"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
   <symbol id="i-message-square" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
   <symbol id="i-paint-roller" viewBox="0 0 24 24"><rect width="16" height="6" x="2" y="2" rx="2"/><path d="M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect width="4" height="6" x="8" y="16" rx="1"/></symbol>
@@ -117,6 +130,20 @@
       </a>
     </nav>
 
+    <!-- Troca de idioma. O ingles e o padrao do site; a escolha
+         fica guardada no navegador para a proxima visita. -->
+    <div class="idioma" role="group" aria-label="Language / Idioma">
+      <button class="idioma__op is-ativa" type="button" data-idioma="en" aria-pressed="true" title="English">
+        <svg class="idioma__flag" aria-hidden="true"><use href="#i-bandeira-eua"/></svg>
+        <span class="idioma__sigla">EN</span>
+      </button>
+      <button class="idioma__op" type="button" data-idioma="pt" aria-pressed="false" title="Português do Brasil">
+        <svg class="idioma__flag" aria-hidden="true"><use href="#i-bandeira-brasil"/></svg>
+        <span class="idioma__sigla">PT</span>
+      </button>
+      <span class="idioma__marca" aria-hidden="true"></span>
+    </div>
+
     <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav">
       <svg class="ico burger__open" aria-hidden="true"><use href="#i-menu"/></svg>
       <svg class="ico burger__close" aria-hidden="true"><use href="#i-x"/></svg>
@@ -139,12 +166,6 @@
            playsinline muted preload="auto"
            poster="assets/img/hero-poster.jpg"
            data-src="assets/video/hero-construction.mp4"></video>
-
-    <!-- No celular o mesmo movimento roda como sequencia de imagens
-         desenhada aqui: o seek quadro a quadro de um <video> nao e
-         fluido em aparelho movel. So aparece quando o primeiro
-         quadro carrega; ate la fica a imagem fixa do CSS. -->
-    <canvas class="stage__frames" id="heroFrames" data-total="28" aria-hidden="true"></canvas>
 
     <div class="stage__scrim"></div>
   </div>
@@ -299,6 +320,112 @@
   </div>
 </section>
 
+<!-- ===== Galeria por servico =====
+     Cada cartao e uma categoria e abre o visualizador com as fotos
+     daquela categoria. Para adicionar uma foto, basta uma linha
+     nova na lista .cat__fotos do cartao: o contador e a navegacao
+     se ajustam sozinhos. A capa do cartao e uma imagem a parte,
+     entao pode ser a melhor foto do conjunto. -->
+<section class="section gallery" id="projects">
+  <div class="wrap">
+    <header class="section__head">
+      <div>
+        <p class="eyebrow">The work</p>
+        <h2 class="section__title">Five services.<br>One crew.</h2>
+      </div>
+      <div class="section__aside">
+        <p class="section__intro">
+          Painting inside and out, finish carpentry, drywall and deck washing, all done by
+          the same crew. Nothing gets lost between trades, and the finish matches from the
+          baseboard to the ceiling. Open a service to see the work.
+        </p>
+        <a class="link-arrow" href="#contact">
+          Get a free estimate
+          <svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>
+        </a>
+      </div>
+    </header>
+
+    <ul class="cats">
+      <li class="cat" style="grid-area: a">
+        <button class="cat__btn" type="button" data-cat-nome="Interior painting">
+          <img class="cat__img" src="assets/img/projects/interior-painting-crew.jpg" alt="" loading="lazy" decoding="async">
+          <span class="cat__meta">
+            <span class="cat__nome">Interior painting</span>
+            <span class="cat__qtd" data-sem-traducao></span>
+          </span>
+        </button>
+        <ul class="cat__fotos" hidden>
+          <li data-src="assets/img/projects/interior-painting-crew.jpg" data-alt="Two painters rolling fresh paint on the walls and ceiling of a bright room"></li>
+          <li data-src="assets/img/projects/interior-prep-work.jpg" data-alt="Room prepared for painting with drop cloths, ladder and open ceiling"></li>
+        </ul>
+      </li>
+
+      <li class="cat" style="grid-area: b">
+        <button class="cat__btn" type="button" data-cat-nome="Exterior painting">
+          <img class="cat__img" src="assets/img/projects/exterior-brick-facade.jpg" alt="" loading="lazy" decoding="async">
+          <span class="cat__meta">
+            <span class="cat__nome">Exterior painting</span>
+            <span class="cat__qtd" data-sem-traducao></span>
+          </span>
+        </button>
+        <ul class="cat__fotos" hidden>
+          <li data-src="assets/img/projects/exterior-brick-facade.jpg" data-alt="Crew on scaffolding painting the trim of a brick house"></li>
+          <li data-src="assets/img/projects/exterior-stucco-wall.jpg" data-alt="Painters rolling a fresh coat on the exterior wall of a light stucco home"></li>
+          <li data-src="assets/img/projects/exterior-facade-painting.jpg" data-alt="Two painters with rollers on extension poles working on a white facade"></li>
+        </ul>
+      </li>
+
+      <li class="cat" style="grid-area: c">
+        <button class="cat__btn" type="button" data-cat-nome="Finish carpentry">
+          <img class="cat__img" src="assets/img/projects/carpentry-kitchen-cabinets.jpg" alt="" loading="lazy" decoding="async">
+          <span class="cat__meta">
+            <span class="cat__nome">Finish carpentry</span>
+            <span class="cat__qtd" data-sem-traducao></span>
+          </span>
+        </button>
+        <ul class="cat__fotos" hidden>
+          <li data-src="assets/img/projects/carpentry-kitchen-cabinets.jpg" data-alt="Carpenter fitting the door of a wall cabinet in a kitchen"></li>
+          <li data-src="assets/img/projects/carpentry-built-ins.jpg" data-alt="Carpenter assembling a built in shelving unit in a living room"></li>
+          <li data-src="assets/img/projects/carpentry-cutting.jpg" data-alt="Carpenter cutting a board with a circular saw on a work stand"></li>
+          <li data-src="assets/img/projects/carpentry-kitchen-build.jpg" data-alt="Crew installing cabinets and countertops in a kitchen under construction"></li>
+          <li data-src="assets/img/projects/carpentry-kitchen-island.jpg" data-alt="Two carpenters setting a kitchen island in place"></li>
+        </ul>
+      </li>
+
+      <li class="cat" style="grid-area: d">
+        <button class="cat__btn" type="button" data-cat-nome="Drywall taping">
+          <img class="cat__img" src="assets/img/projects/drywall-ceiling-install.jpg" alt="" loading="lazy" decoding="async">
+          <span class="cat__meta">
+            <span class="cat__nome">Drywall taping</span>
+            <span class="cat__qtd" data-sem-traducao></span>
+          </span>
+        </button>
+        <ul class="cat__fotos" hidden>
+          <li data-src="assets/img/projects/drywall-ceiling-install.jpg" data-alt="Two workers lifting a drywall panel into a ceiling"></li>
+          <li data-src="assets/img/projects/drywall-board-install.jpg" data-alt="Worker carrying a drywall board to a framed wall"></li>
+          <li data-src="assets/img/projects/drywall-ceiling-grid.jpg" data-alt="Worker fitting a panel into a suspended ceiling grid"></li>
+        </ul>
+      </li>
+
+      <li class="cat" style="grid-area: e">
+        <button class="cat__btn" type="button" data-cat-nome="Deck washing">
+          <img class="cat__img" src="assets/img/projects/deck-pressure-wash.jpg" alt="" loading="lazy" decoding="async">
+          <span class="cat__meta">
+            <span class="cat__nome">Deck washing</span>
+            <span class="cat__qtd" data-sem-traducao></span>
+          </span>
+        </button>
+        <ul class="cat__fotos" hidden>
+          <li data-src="assets/img/projects/deck-pressure-wash.jpg" data-alt="Pressure washing a wooden deck, clean boards next to weathered ones"></li>
+          <li data-src="assets/img/projects/deck-wash-backyard.jpg" data-alt="Worker pressure washing a backyard deck"></li>
+          <li data-src="assets/img/projects/driveway-pressure-wash.jpg" data-alt="Pressure washing the driveway in front of a garage"></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</section>
+
 <!-- ===== Sobre, agora a segunda secao clara ===== -->
 <section class="section about" id="about">
   <div class="wrap">
@@ -435,67 +562,6 @@
 
 
 
-<!-- =========================================================
-     FOTOS
-     Para publicar fotos reais: coloque os arquivos em
-     assets/img/projects/ e troque cada <div class="shot__ph">
-     por <img class="shot__img" src="assets/img/projects/nome.jpg" alt="...">
-     ========================================================= -->
-<section class="section gallery" id="projects">
-  <div class="wrap">
-    <header class="section__head">
-      <div>
-        <p class="eyebrow">Photos</p>
-        <h2 class="section__title">Work that speaks for itself.</h2>
-      </div>
-      <p class="section__intro">
-        A growing collection of homes transformed through painting, finishing and close
-        attention to detail.
-      </p>
-    </header>
-
-    <div class="filters" role="tablist" aria-label="Filter photos">
-      <button class="filters__btn is-active" type="button" role="tab" aria-selected="true" data-filter="all">All photos</button>
-      <button class="filters__btn" type="button" role="tab" aria-selected="false" data-filter="interior">Interior</button>
-      <button class="filters__btn" type="button" role="tab" aria-selected="false" data-filter="exterior">Exterior</button>
-      <button class="filters__btn" type="button" role="tab" aria-selected="false" data-filter="details">Finish details</button>
-    </div>
-
-    <ul class="shots" id="shots">
-      <li class="shot shot--wide" data-cat="interior" data-tone="terracotta">
-        <img class="shot__img" src="assets/img/projects/interior-refresh.jpg" alt="Living room with freshly painted walls, white trim and a brick fireplace" loading="lazy" decoding="async">
-        <div class="shot__meta"><span class="shot__cat">Interior</span><h3 class="shot__title">Interior refresh</h3></div>
-      </li>
-      <li class="shot" data-cat="exterior" data-tone="blue">
-        <img class="shot__img" src="assets/img/projects/exterior-repaint.jpg" alt="Two story home with newly painted siding and a white front porch" loading="lazy" decoding="async">
-        <div class="shot__meta"><span class="shot__cat">Exterior</span><h3 class="shot__title">Exterior repaint</h3></div>
-      </li>
-      <li class="shot" data-cat="details" data-tone="amber">
-        <img class="shot__img" src="assets/img/projects/trim-and-moldings.jpg" alt="Detail of ornamental crown molding meeting a painted ceiling" loading="lazy" decoding="async">
-        <div class="shot__meta"><span class="shot__cat">Finish details</span><h3 class="shot__title">Trim and moldings</h3></div>
-      </li>
-      <li class="shot" data-cat="interior" data-tone="terracotta">
-        <img class="shot__img" src="assets/img/projects/ceilings-and-walls.jpg" alt="Roller applying a fresh coat of paint to a ceiling next to a taped window frame" loading="lazy" decoding="async">
-        <div class="shot__meta"><span class="shot__cat">Interior</span><h3 class="shot__title">Ceilings and walls</h3></div>
-      </li>
-      <li class="shot" data-cat="details" data-tone="slate">
-        <img class="shot__img" src="assets/img/projects/drywall-finishing.jpg" alt="Worker smoothing drywall compound over a seam with a taping knife" loading="lazy" decoding="async">
-        <div class="shot__meta"><span class="shot__cat">Finish details</span><h3 class="shot__title">Drywall finishing</h3></div>
-      </li>
-      <li class="shot shot--wide" data-cat="exterior" data-tone="teal">
-        <img class="shot__img" src="assets/img/projects/deck-cleaning.jpg" alt="Clean wooden deck with outdoor dining furniture overlooking a green yard" loading="lazy" decoding="async">
-        <div class="shot__meta"><span class="shot__cat">Exterior</span><h3 class="shot__title">Deck cleaning</h3></div>
-      </li>
-    </ul>
-
-    <p class="gallery__note">
-      <svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg>
-      Reference images while photography of completed PRODESIGN projects is being added.
-      <a class="link-arrow" href="#contact">Your project could be next <svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a>
-    </p>
-  </div>
-</section>
-
 <!-- ===== FAQ ===== -->
 <section class="section faq" id="faq">
   <div class="wrap faq__inner">
@@ -533,104 +599,242 @@
   </div>
 </section>
 
+<!-- ===== Depoimentos =====
+     ATENCAO: os tres depoimentos abaixo sao de exemplo, escritos
+     para montar o layout, e por isso o nome de cada um esta como
+     "Sample name". Troque o texto e o nome por depoimentos reais
+     antes de publicar. -->
+<section class="section depo" id="testimonials">
+  <div class="wrap">
+
+    <div class="depo__mural" aria-hidden="true">
+      <div class="depo__col">
+        <img src="assets/img/projects/exterior-brick-facade.jpg" alt="Crew painting the trim of a brick house" loading="lazy" decoding="async">
+        <img src="assets/img/projects/carpentry-kitchen-cabinets.jpg" alt="Carpenter fitting a kitchen cabinet door" loading="lazy" decoding="async">
+      </div>
+      <div class="depo__col">
+        <img src="assets/img/projects/interior-painting-crew.jpg" alt="Painters working on the walls of a bright room" loading="lazy" decoding="async">
+      </div>
+      <div class="depo__col">
+        <img src="assets/img/projects/drywall-ceiling-install.jpg" alt="Workers lifting a drywall panel into a ceiling" loading="lazy" decoding="async">
+      </div>
+      <div class="depo__col">
+        <img src="assets/img/projects/exterior-stucco-wall.jpg" alt="Painters rolling a coat on a stucco wall" loading="lazy" decoding="async">
+      </div>
+      <div class="depo__col">
+        <img src="assets/img/projects/carpentry-built-ins.jpg" alt="Carpenter assembling a built in shelving unit" loading="lazy" decoding="async">
+      </div>
+      <div class="depo__col">
+        <img src="assets/img/projects/interior-prep-work.jpg" alt="Room prepared for painting" loading="lazy" decoding="async">
+      </div>
+      <div class="depo__col">
+        <img src="assets/img/projects/deck-wash-backyard.jpg" alt="Worker pressure washing a backyard deck" loading="lazy" decoding="async">
+      </div>
+      <div class="depo__col">
+        <img src="assets/img/projects/drywall-board-install.jpg" alt="Worker carrying a drywall board" loading="lazy" decoding="async">
+        <img src="assets/img/projects/exterior-facade-painting.jpg" alt="Painters with rollers on a white facade" loading="lazy" decoding="async">
+      </div>
+
+      <div class="depo__centro">
+        <p class="pill">Testimonials</p>
+        <h2 class="depo__titulo">
+          Ask the people
+          <span>who live with our work</span>
+        </h2>
+      </div>
+    </div>
+
+    <ul class="depo__lista">
+      <li class="depo__item">
+        <p class="depo__estrelas" aria-label="Five out of five stars">
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+        </p>
+        <blockquote class="depo__texto">
+          They covered every floor before opening a single can. Two rooms and the hallway
+          in three days, and the trim lines are sharp enough that I keep pointing them out
+          to people.
+        </blockquote>
+        <figcaption class="depo__autor">
+          <img class="depo__foto" src="assets/img/people/avatar-01.gif" alt="" width="72" height="72" loading="lazy" decoding="async">
+          <span class="depo__dados">
+            <span class="depo__nome">Sample name</span>
+            <span class="depo__papel">Interior painting, Uxbridge</span>
+          </span>
+        </figcaption>
+      </li>
+
+      <li class="depo__item">
+        <p class="depo__estrelas" aria-label="Five out of five stars">
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+        </p>
+        <blockquote class="depo__texto">
+          The estimate came the next morning and the price held to the end. No change
+          orders, no surprises. The siding went through a hard winter and still looks like
+          the day they finished.
+        </blockquote>
+        <figcaption class="depo__autor">
+          <img class="depo__foto" src="assets/img/people/avatar-03.gif" alt="" width="72" height="72" loading="lazy" decoding="async">
+          <span class="depo__dados">
+            <span class="depo__nome">Sample name</span>
+            <span class="depo__papel">Exterior painting, Whitinsville</span>
+          </span>
+        </figcaption>
+      </li>
+
+      <li class="depo__item">
+        <p class="depo__estrelas" aria-label="Five out of five stars">
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+        </p>
+        <blockquote class="depo__texto">
+          Drywall, trim and paint with one crew, so there was nobody to chase and nobody
+          blaming the next guy. They cleaned up every evening, which mattered with kids in
+          the house.
+        </blockquote>
+        <figcaption class="depo__autor">
+          <img class="depo__foto" src="assets/img/people/avatar-04.gif" alt="" width="72" height="72" loading="lazy" decoding="async">
+          <span class="depo__dados">
+            <span class="depo__nome">Sample name</span>
+            <span class="depo__papel">Full remodel, Northbridge</span>
+          </span>
+        </figcaption>
+      </li>
+    </ul>
+  </div>
+</section>
+
 <!-- ===== Contato ===== -->
 <section class="section contact" id="contact">
-  <div class="wrap contact__inner">
+  <div class="wrap">
 
-    <div class="contact__aside">
-      <p class="eyebrow">Start your project</p>
-      <h2 class="section__title">Ready to make your space feel complete?</h2>
-      <p class="contact__text">
-        Tell us what you have in mind. We will help you take the next step with a free
-        estimate, and your first project comes with 10% off.
+    <header class="section__head">
+      <div>
+        <p class="eyebrow">Start your project</p>
+        <h2 class="section__title">Ready to make your<br>space feel complete?</h2>
+      </div>
+      <p class="section__intro">
+        Tell us what you have in mind and we get back to you within one business day with a
+        free estimate. Your first project comes with 10% off.
       </p>
+    </header>
 
-      <ul class="contact__list">
-        <li>
-          <span class="contact__ico" data-tone="terracotta"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg></span>
-          <span class="contact__data"><span class="contact__label">Phone</span><a href="tel:+18573339140">(857) 333-9140</a></span>
-        </li>
-        <li>
-          <span class="contact__ico" data-tone="blue"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg></span>
-          <span class="contact__data"><span class="contact__label">Email</span><a href="mailto:contact@prodesignpainting.com">contact@prodesignpainting.com</a></span>
-        </li>
-        <li>
-          <span class="contact__ico" data-tone="teal"><svg class="ico" aria-hidden="true"><use href="#i-map-pin"/></svg></span>
-          <span class="contact__data"><span class="contact__label">Address</span><a href="https://maps.google.com/?q=32+Elm+St,+Uxbridge,+MA" target="_blank" rel="noopener">32 Elm St, Uxbridge, MA</a></span>
-        </li>
-      </ul>
+    <div class="contact__grid">
+      <div class="formcard">
+        <!-- Sem backend: o envio abre o cliente de email com tudo preenchido.
+             Para usar um servico externo, preencha data-endpoint com a URL
+             (Formspree, Basin, Netlify Forms) e o script faz POST. -->
+        <form class="form" id="estimateForm" data-endpoint="" novalidate>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-name">Full name</label>
+              <input id="f-name" name="name" type="text" autocomplete="name" required placeholder="Your name">
+              <span class="field__error">Please tell us your name.</span>
+            </div>
+            <div class="field">
+              <label for="f-email">Email address</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" placeholder="you@email.com">
+              <span class="field__error">Please check this email address.</span>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-phone">Phone number</label>
+              <input id="f-phone" name="phone" type="tel" autocomplete="tel" required placeholder="(000) 000-0000">
+              <span class="field__error">A phone number helps us reach you.</span>
+            </div>
+            <div class="field">
+              <label for="f-service">Service needed</label>
+              <div class="select">
+                <select id="f-service" name="service" required>
+                  <option value="">Select a service</option>
+                  <option>Exterior Painting</option>
+                  <option>Interior Painting</option>
+                  <option>Deck Washing &amp; Cleaning</option>
+                  <option>Finish Carpentry</option>
+                  <option>Drywall Taping &amp; Finishing</option>
+                  <option>More than one service</option>
+                </select>
+                <svg class="ico select__arrow" aria-hidden="true"><use href="#i-arrow-down"/></svg>
+              </div>
+              <span class="field__error">Choose the service you need.</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="f-message">Tell us about your project</label>
+            <textarea id="f-message" name="message" rows="4" placeholder="Rooms, square footage, timeline, anything that helps."></textarea>
+          </div>
+
+          <label class="check">
+            <input type="checkbox" name="promo" checked>
+            <span class="check__box"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg></span>
+            <span>Apply the 10% first-project discount</span>
+          </label>
+
+          <div class="form__envio">
+            <button class="btn btn--solid btn--lg" type="submit">
+              Request my free estimate
+              <svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+            </button>
+            <p class="form__foot">
+              <svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>
+              Free, with no obligation.
+            </p>
+          </div>
+
+          <p class="form__done" id="formDone" hidden role="status">
+            <svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>
+            <span>Thank you. Your estimate request is on its way.</span>
+          </p>
+        </form>
+      </div>
+
+      <!-- Mapa da oficina. O endereco tambem esta escrito abaixo,
+           porque o mapa depende de um servico de fora e pode ser
+           bloqueado por bloqueadores de rastreamento. -->
+      <div class="contact__mapa">
+        <iframe
+          src="https://www.google.com/maps?q=32%20Elm%20St,%20Uxbridge,%20MA&amp;z=15&amp;output=embed"
+          title="Map showing 32 Elm St, Uxbridge, Massachusetts"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen></iframe>
+        <a class="contact__mapa-link" href="https://maps.google.com/?q=32+Elm+St,+Uxbridge,+MA" target="_blank" rel="noopener">
+          Open in Maps
+          <svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>
+        </a>
+      </div>
     </div>
 
-    <div class="formcard">
-      <h3 class="formcard__title">Let's talk about your project.</h3>
-
-      <!-- Sem backend: o envio abre o cliente de email com tudo preenchido.
-           Para usar um servico externo, preencha data-endpoint com a URL
-           (Formspree, Basin, Netlify Forms) e o script faz POST. -->
-      <form class="form" id="estimateForm" data-endpoint="" novalidate>
-        <div class="field">
-          <label for="f-name">Full name</label>
-          <input id="f-name" name="name" type="text" autocomplete="name" required placeholder="Your name">
-          <span class="field__error">Please tell us your name.</span>
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label for="f-phone">Phone number</label>
-            <input id="f-phone" name="phone" type="tel" autocomplete="tel" required placeholder="(000) 000-0000">
-            <span class="field__error">A phone number helps us reach you.</span>
-          </div>
-          <div class="field">
-            <label for="f-email">Email address</label>
-            <input id="f-email" name="email" type="email" autocomplete="email" placeholder="you@email.com">
-            <span class="field__error">Please check this email address.</span>
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="f-service">Service needed</label>
-          <div class="select">
-            <select id="f-service" name="service" required>
-              <option value="">Select a service</option>
-              <option>Exterior Painting</option>
-              <option>Interior Painting</option>
-              <option>Deck Washing &amp; Cleaning</option>
-              <option>Finish Carpentry</option>
-              <option>Drywall Taping &amp; Finishing</option>
-              <option>More than one service</option>
-            </select>
-            <svg class="ico select__arrow" aria-hidden="true"><use href="#i-arrow-down"/></svg>
-          </div>
-          <span class="field__error">Choose the service you need.</span>
-        </div>
-
-        <div class="field">
-          <label for="f-message">Tell us about your project</label>
-          <textarea id="f-message" name="message" rows="4" placeholder="Rooms, square footage, timeline, anything that helps."></textarea>
-        </div>
-
-        <label class="check">
-          <input type="checkbox" name="promo" checked>
-          <span class="check__box"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg></span>
-          <span>Apply the 10% first-project discount</span>
-        </label>
-
-        <button class="btn btn--accent btn--block btn--lg" type="submit">
-          Request my free estimate
-          <svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg>
-        </button>
-
-        <p class="form__foot">
-          <svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>
-          Free, with no obligation. We reply within one business day.
-        </p>
-
-        <p class="form__done" id="formDone" hidden role="status">
-          <svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>
-          <span>Thank you. Your estimate request is on its way.</span>
-        </p>
-      </form>
-    </div>
+    <ul class="canais">
+      <li class="canal">
+        <span class="canal__ico" data-tone="terracotta"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg></span>
+        <p class="canal__titulo">Call us</p>
+        <p class="canal__dado"><a href="tel:+18573339140">(857) 333-9140</a></p>
+      </li>
+      <li class="canal">
+        <span class="canal__ico" data-tone="blue"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg></span>
+        <p class="canal__titulo">Write to us</p>
+        <p class="canal__dado"><a href="mailto:contact@prodesignpainting.com">contact@prodesignpainting.com</a></p>
+      </li>
+      <li class="canal">
+        <span class="canal__ico" data-tone="teal"><svg class="ico" aria-hidden="true"><use href="#i-map-pin"/></svg></span>
+        <p class="canal__titulo">Find us</p>
+        <p class="canal__dado"><a href="https://maps.google.com/?q=32+Elm+St,+Uxbridge,+MA" target="_blank" rel="noopener">32 Elm St, Uxbridge, MA</a></p>
+      </li>
+    </ul>
 
   </div>
 </section>
@@ -686,8 +890,41 @@
   </div>
 </footer>
 
+<!-- ===== Visualizador da galeria =====
+     Um so para a pagina inteira. O conteudo e montado pelo script
+     a partir da lista de fotos do cartao que foi aberto. -->
+<div class="visor" id="visor" hidden role="dialog" aria-modal="true" aria-labelledby="visorTitulo">
+  <div class="visor__fundo" data-fechar></div>
+
+  <div class="visor__caixa">
+    <header class="visor__topo">
+      <p class="visor__titulo" id="visorTitulo"></p>
+      <button class="visor__fechar" type="button" data-fechar aria-label="Close the gallery">
+        <svg class="ico" aria-hidden="true"><use href="#i-x"/></svg>
+      </button>
+    </header>
+
+    <div class="visor__palco">
+      <img class="visor__img" id="visorImg" alt="">
+
+      <button class="visor__seta visor__seta--ant" type="button" data-passo="-1" aria-label="Previous photo">
+        <svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+      </button>
+      <button class="visor__seta visor__seta--prox" type="button" data-passo="1" aria-label="Next photo">
+        <svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+      </button>
+    </div>
+
+    <footer class="visor__rodape">
+      <p class="visor__contador" id="visorContador" role="status"></p>
+      <ul class="visor__pontos" id="visorPontos"></ul>
+    </footer>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="js/pt.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

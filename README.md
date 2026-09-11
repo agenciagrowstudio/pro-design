@@ -8,7 +8,8 @@ build: são arquivos estáticos que rodam em qualquer hospedagem.
 ```
 index.html                      página inteira, com âncoras por seção
 css/style.css                   folha única (tokens no :root)
-js/main.js                      vídeo por scroll, menu, filtros, FAQ, formulário
+js/main.js                      vídeo por scroll, idioma, menu, galeria, FAQ, formulários
+js/pt.js                        dicionário da tradução para português
 assets/video/                   vídeo do hero (desktop e mobile)
 assets/img/hero-poster.jpg      primeiro frame, exibido antes do vídeo carregar
 assets/img/projects/            fotos reais dos projetos (ainda vazia)
@@ -27,7 +28,7 @@ O menu é de ancoragem, tudo na mesma página:
 | (sem menu) | `#offer` | segunda tela, oferta de 10% no último frame |
 | About | `#about` | primeira seção clara, com os padrões de trabalho |
 | Services | `#services` | cinco serviços, uma cor por categoria |
-| Photos | `#projects` | galeria com filtros |
+| Photos | `#projects` | galeria por serviço, com visualizador |
 | FAQ | `#faq` | acordeão |
 | Get a free estimate | `#contact` | formulário |
 
@@ -49,16 +50,11 @@ Detalhes que fazem isso funcionar:
 - o vídeo é recodificado com **um keyframe em cada frame** (`-g 1`), senão o seek trava;
 - depois de um segundo o arquivo é baixado inteiro e trocado por um blob local, o que
   elimina as requisições por range a cada movimento do scroll;
-- em telas de até 760px não há vídeo nenhum: o `<video>` sai do DOM e o mesmo movimento
-  roda como **sequência de imagens desenhada em canvas** (`assets/frames/f01.webp` a
-  `f28.webp`, 768px, 1,0 MB no total). O scroll escolhe o quadro, então a fluidez não
-  depende do decodificador do aparelho, que foi o que travou quando isso era um `<video>`
-  com seek. Os quadros são baixados em fila, não todos de uma vez, e o canvas só aparece
-  depois que o primeiro chega;
-- enquanto o primeiro quadro carrega (e se o carregamento falhar, ou com
-  `prefers-reduced-motion`) ficam as imagens fixas do CSS: `hero-mobile.jpg` na primeira
-  tela e `offer-mobile.jpg` na tela da oferta. A classe `tem-frames` no `#stage` é o que
-  troca um pelo outro;
+- em telas de até 760px não há vídeo nenhum: o `<video>` sai do DOM e o palco usa duas
+  imagens fixas, `hero-mobile.jpg` na primeira tela e `offer-mobile.jpg` (último quadro) na
+  tela da oferta, mantendo a leitura de obra bruta virando casa pronta. O seek quadro a
+  quadro não fica fluido em aparelho móvel e ainda custaria megabytes de rede. Uma
+  sequência de imagens em canvas chegou a ser testada no lugar disso e foi descartada;
 - com `prefers-reduced-motion` o vídeo fica parado no primeiro frame;
 - o tween só é registrado depois que a duração do vídeo é conhecida, e a checagem usa
   `readyState` em vez de esperar apenas o evento `loadedmetadata`: com o arquivo em cache o
@@ -77,11 +73,9 @@ Detalhes que fazem isso funcionar:
 bash tools/build-video.sh "/caminho/do/novo-video.mp4"
 ```
 
-O script gera o vídeo de desktop (1280p, 30fps, keyframe em cada frame), a sequência de
-quadros do celular (`assets/frames`, 768px, 4fps) e o poster.
-
-Se a contagem de quadros mudar, ajuste `data-total` no `<canvas id="heroFrames">` do
-`index.html`. O script imprime o número no fim.
+O script gera o vídeo de desktop (1280p, 30fps, keyframe em cada frame), o poster e as
+duas imagens fixas do celular: `hero-mobile.jpg` do primeiro quadro e `offer-mobile.jpg`
+do último. Nada mais precisa mudar no HTML.
 
 ### Cabeçalho durante o vídeo
 
@@ -106,35 +100,85 @@ reais assim que o cliente enviar.
 
 | Arquivo | Categoria | Pexels |
 |---|---|---|
-| `interior-refresh.jpg` | interior | 8583595 |
-| `exterior-repaint.jpg` | exterior | 39447777 |
-| `trim-and-moldings.jpg` | details | 9036949 |
-| `ceilings-and-walls.jpg` | interior | 5691677 |
-| `drywall-finishing.jpg` | details | 6474308 |
-| `deck-cleaning.jpg` | exterior | 4469195 |
+| `interior-refresh.jpg` | Interior painting | 8583595 |
+| `ceilings-and-walls.jpg` | Interior painting | 5691677 |
+| `exterior-repaint.jpg` | Exterior painting | 39447777 |
+| `deck-cleaning.jpg` | Deck washing | 4469195 |
+| `trim-and-moldings.jpg` | Finish carpentry | 9036949 |
+| `drywall-finishing.jpg` | Drywall taping | 6474308 |
 
 Ao escolher novas imagens de banco, confira se não há uniforme ou logotipo de outra empresa
 visível. Uma boa candidata foi descartada por isso.
 
 ## Publicar as fotos dos projetos
 
+A galeria fica logo depois da faixa de números e é organizada por serviço. Cada cartão é
+uma categoria: a capa que aparece no grid e, escondida dentro dele, a lista das fotos que
+o visualizador abre.
+
 1. Coloque os arquivos em `assets/img/projects/`.
-2. No `index.html`, dentro da seção `#projects`, troque o marcador pela imagem:
+2. No `index.html`, dentro da seção `#projects`, acrescente uma linha na `.cat__fotos` do
+   cartão da categoria:
 
 ```html
-<!-- de -->
-<div class="shot__ph"><svg class="ico"><use href="#i-image"/></svg></div>
-
-<!-- para -->
-<img class="shot__img" src="assets/img/projects/sala-antes-depois.jpg"
-     alt="Sala pintada em tom claro após o serviço">
+<ul class="cat__fotos" hidden>
+  <li data-src="assets/img/projects/sala-antes-depois.jpg"
+      data-alt="Sala pintada em tom claro após o serviço"></li>
+</ul>
 ```
 
-Mantenha o `data-cat` do cartão (`interior`, `exterior` ou `details`), que é o que
-alimenta os filtros, e o `data-tone`, que define a cor da etiqueta.
+Só isso. O contador do cartão ("4 photos") e os pontos de navegação do visualizador saem
+da própria lista, então não existe número escrito à mão para desencontrar. Com uma foto
+só, as setas e os pontos somem.
 
-Proporção recomendada: 4:3 nos cartões normais e 16:9 nos cartões largos
-(`shot--wide`). O corte é feito por `object-fit: cover`, então imagens maiores funcionam.
+A capa do cartão é a `<img class="cat__img">`, separada da lista: pode ser a melhor foto
+do conjunto ou uma imagem só para o grid.
+
+Para criar uma categoria nova, copie um `<li class="cat">` inteiro e troque o
+`data-cat-nome` do botão, o `.cat__nome` e a lista. `cat--wide` faz o cartão ocupar duas
+colunas.
+
+Proporção recomendada: 4:3 nos cartões normais e 16:9 no cartão largo. O corte é por
+`object-fit: cover`, então imagens maiores funcionam. Dentro do visualizador a foto
+aparece inteira, sem corte.
+
+### O visualizador
+
+Fecha com Esc, com clique fora ou no X. As setas do teclado e o arrastar do dedo trocam
+de foto, e a navegação é circular. Ao fechar, o foco volta para o cartão que abriu.
+
+## Idiomas
+
+O site nasce em inglês. O seletor no cabeçalho troca para português do Brasil e a escolha
+fica guardada no navegador, então na visita seguinte a pessoa cai direto no idioma que
+escolheu.
+
+Não existem duas páginas: a tradução é feita na hora. O script percorre os nós de texto,
+troca cada trecho que encontra no dicionário de `js/pt.js` e guarda o original, então
+voltar ao inglês é restaurar o que estava lá. Atributos (`placeholder`, `aria-label`,
+`title`, a descrição do `<meta>`) passam pelo mesmo caminho.
+
+### Mudar ou adicionar um texto
+
+1. Edite a frase em inglês no `index.html`.
+2. Edite a **chave** correspondente em `js/pt.js`, que precisa ser idêntica à frase nova.
+
+Se a chave não bater, aquele trecho simplesmente fica em inglês quando o visitante troca
+de idioma, sem quebrar nada. Para achar o que ficou de fora, abra o console com o site em
+português e digite:
+
+```js
+TRADUCAO_FALTANDO
+```
+
+A lista traz tudo que apareceu na tela e não estava no dicionário. Telefone, endereço,
+e-mail e a marca PRODESIGN aparecem aí de propósito: não devem ser traduzidos.
+
+### Texto escrito pelo script
+
+O contador de fotos de cada categoria ("3 photos" / "3 fotos") é gerado em JavaScript, não
+está no HTML. Elementos assim levam `data-sem-traducao` e se inscrevem em `aoTrocarIdioma`
+para se reescreverem sozinhos quando o idioma muda.
 
 ## Formulários
 

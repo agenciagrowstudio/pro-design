@@ -10,12 +10,10 @@ SRC="${1:-}"
 [ -f "$SRC" ] || { echo "Arquivo nao encontrado: $SRC"; exit 1; }
 
 FPS=30
-FPS_MOBILE=4
-LARGURA_MOBILE=768
+LARGURA_MOBILE=1080
 OUT_DIR="assets/video"
 IMG_DIR="assets/img"
-FRAMES_DIR="assets/frames"
-mkdir -p "$OUT_DIR" "$IMG_DIR" "$FRAMES_DIR"
+mkdir -p "$OUT_DIR" "$IMG_DIR"
 
 echo "Origem:"
 ffprobe -v error -select_streams v:0 -show_entries stream=width,height,r_frame_rate,nb_frames \
@@ -29,23 +27,21 @@ ffmpeg -y -v error -i "$SRC" -an \
   -movflags +faststart "$OUT_DIR/hero-construction.mp4"
 
 # No celular nao roda video: o seek quadro a quadro nao fica fluido em
-# aparelho movel. O mesmo movimento vira uma sequencia de imagens que o
-# canvas desenha conforme a rolagem.
-echo "Gerando a sequencia de quadros do celular ..."
-rm -f "$FRAMES_DIR"/*.webp
-ffmpeg -y -v error -i "$SRC" -an \
-  -vf "fps=${FPS_MOBILE},scale=${LARGURA_MOBILE}:-2" \
-  -c:v libwebp -lossless 0 -q:v 64 -compression_level 6 \
-  -f image2 "$FRAMES_DIR/f%02d.webp"
+# aparelho movel. Ficam duas imagens fixas, o primeiro e o ultimo quadro,
+# que e o que mantem a leitura de obra bruta virando casa pronta.
+DURACAO=$(ffprobe -v error -select_streams v:0 -show_entries format=duration \
+  -of default=noprint_wrappers=1:nokey=1 "$SRC")
+FIM=$(awk -v d="$DURACAO" 'BEGIN { printf "%.3f", (d > 0.1 ? d - 0.05 : 0) }')
 
-TOTAL=$(ls "$FRAMES_DIR"/*.webp | wc -l | tr -d ' ')
-echo "Quadros gerados: $TOTAL"
-echo "Se esse numero mudar, ajuste data-total no canvas heroFrames do index.html."
+echo "Gerando as imagens fixas do celular ..."
+ffmpeg -y -v error -ss 0 -i "$SRC" -frames:v 1 \
+  -vf "scale=${LARGURA_MOBILE}:-2" -q:v 4 "$IMG_DIR/hero-mobile.jpg"
+ffmpeg -y -v error -ss "$FIM" -i "$SRC" -frames:v 1 \
+  -vf "scale=${LARGURA_MOBILE}:-2" -q:v 4 "$IMG_DIR/offer-mobile.jpg"
 
 echo "Gerando poster ..."
 ffmpeg -y -v error -ss 0 -i "$SRC" -frames:v 1 -vf "scale=1600:-2" -q:v 4 "$IMG_DIR/hero-poster.jpg"
 
 echo ""
 echo "Pronto:"
-ls -lh "$OUT_DIR" "$IMG_DIR/hero-poster.jpg"
-du -ch "$FRAMES_DIR"/*.webp | tail -1
+ls -lh "$OUT_DIR" "$IMG_DIR/hero-poster.jpg" "$IMG_DIR/hero-mobile.jpg" "$IMG_DIR/offer-mobile.jpg"
