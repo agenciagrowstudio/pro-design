@@ -378,52 +378,7 @@
   }
 
   /* =======================================================
-     4. LINKS DE EMAIL
-     O mailto abre o programa de email de quem visita, e no
-     computador muita gente nao tem nenhum configurado: o clique
-     nao faz nada e a pessoa fica sem o endereco. Aqui o clique
-     tambem copia o endereco e avisa que copiou, para o caminho
-     nunca terminar em nada.
-     ======================================================= */
-  // A API moderna exige pagina segura e foco na janela. Quando ela
-  // recusa, o campo fora de tela ainda resolve.
-  function copiar(texto) {
-    if (navigator.clipboard && window.isSecureContext) {
-      return navigator.clipboard.writeText(texto).then(function () { return true; })
-        .catch(function () { return copiarNaMarra(texto); });
-    }
-    return Promise.resolve(copiarNaMarra(texto));
-  }
-
-  function copiarNaMarra(texto) {
-    var campo = document.createElement('textarea');
-    campo.value = texto;
-    campo.setAttribute('readonly', '');
-    campo.style.cssText = 'position:fixed;top:-1000px;opacity:0';
-    document.body.appendChild(campo);
-    campo.select();
-
-    var deu = false;
-    try { deu = document.execCommand('copy'); } catch (e) { deu = false; }
-
-    document.body.removeChild(campo);
-    return deu;
-  }
-
-  document.querySelectorAll('a.email').forEach(function (link) {
-    link.addEventListener('click', function () {
-      var endereco = link.getAttribute('href').replace('mailto:', '').split('?')[0];
-
-      copiar(endereco).then(function (deu) {
-        if (!deu || link.classList.contains('copiou')) return;
-        link.classList.add('copiou');
-        setTimeout(function () { link.classList.remove('copiou'); }, 2200);
-      });
-    });
-  });
-
-  /* =======================================================
-     5. CABECALHO E MENU
+     4. CABECALHO E MENU
      ======================================================= */
   var header = document.getElementById('header');
   var nav = document.getElementById('nav');
@@ -477,7 +432,7 @@
   }
 
   /* =======================================================
-     6. ROLAGEM SUAVE DAS ANCORAS
+     5. ROLAGEM SUAVE DAS ANCORAS
      Feita aqui, e nao com scroll-behavior no CSS, porque a
      rolagem animada por CSS atrapalha as medicoes do
      ScrollTrigger e desalinha o video do hero.
@@ -506,7 +461,7 @@
   });
 
   /* =======================================================
-     7. LINK ATIVO CONFORME A SECAO NA TELA
+     6. LINK ATIVO CONFORME A SECAO NA TELA
      ======================================================= */
   var links = Array.prototype.slice.call(document.querySelectorAll('.nav__link'));
   var alvos = links
@@ -528,7 +483,7 @@
   }
 
   /* =======================================================
-     8. GALERIA POR CATEGORIA
+     7. GALERIA POR CATEGORIA
      Cada cartao guarda a propria lista de fotos em uma <ul>
      escondida. O visualizador e um so, e e montado na hora com
      a lista do cartao que foi aberto.
@@ -705,7 +660,7 @@
   }
 
   /* =======================================================
-     9. CONTAGEM DOS NUMEROS
+     8. CONTAGEM DOS NUMEROS
      Sobem de zero ate o valor quando a faixa entra na tela,
      uma vez so. Quem pede menos movimento ve o numero final
      direto, sem contagem.
@@ -749,7 +704,7 @@
   }
 
   /* =======================================================
-     10. MURAL DOS DEPOIMENTOS
+     9. MURAL DOS DEPOIMENTOS
      As fotos assentam uma a uma, em ordem sorteada, quando a
      secao chega na tela. Depois disso cada foto acompanha o
      cursor de leve, como um ima de alcance curto.
@@ -807,7 +762,7 @@
   }
 
   /* =======================================================
-     11. TITULOS: entrada e paralaxe
+     10. TITULOS: entrada e paralaxe
      Cada titulo sobe alguns pixels ao aparecer e, depois disso,
      acompanha a rolagem com um deslocamento curto. O movimento
      e pequeno de proposito: e para dar profundidade, nao para
@@ -874,7 +829,7 @@
   }
 
   /* =======================================================
-     12. FAQ: uma pergunta aberta por vez
+     11. FAQ: uma pergunta aberta por vez
      ======================================================= */
   var perguntas = Array.prototype.slice.call(document.querySelectorAll('.qa'));
 
@@ -934,7 +889,7 @@
   });
 
   /* =======================================================
-     13. FORMULARIOS DE ORCAMENTO
+     12. FORMULARIOS DE ORCAMENTO
      Vale para os dois: o curto, no canhoto do cupom, e o
      completo, na secao Contact. Sem backend, monta a mensagem
      e abre o cliente de email. Com data-endpoint preenchido,
