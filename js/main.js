@@ -743,7 +743,11 @@
 
     titulos.forEach(function (t) { olhoTitulos.observe(t); });
 
-    var AMPLITUDE = 12;
+    // No celular a paralaxe fica de fora. A barra de endereco
+    // aparece e some durante a rolagem, a altura da tela muda no
+    // meio do movimento e o titulo dava um solavanco a cada
+    // mudanca, como se estivesse orbitando.
+    var AMPLITUDE = telaPequena ? 0 : 12;
     var pendente = false;
 
     function moverTitulos() {
@@ -760,13 +764,15 @@
       });
     }
 
-    window.addEventListener('scroll', function () {
-      if (pendente) return;
-      pendente = true;
-      requestAnimationFrame(moverTitulos);
-    }, { passive: true });
+    if (!telaPequena) {
+      window.addEventListener('scroll', function () {
+        if (pendente) return;
+        pendente = true;
+        requestAnimationFrame(moverTitulos);
+      }, { passive: true });
 
-    moverTitulos();
+      moverTitulos();
+    }
   }
 
   /* =======================================================
