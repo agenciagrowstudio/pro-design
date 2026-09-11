@@ -62,14 +62,52 @@
     }
   }
 
+  /* No celular a passagem da obra bruta para a casa pronta e um
+     cruzamento de duas imagens, comandado pela rolagem dentro do
+     palco. Sem isso a segunda tela entrava de corte seco. */
+  function trocaDeCenaNoCelular() {
+    var cena2 = document.querySelector('.stage__cena2');
+    if (!cena2 || !stage) return;
+
+    var pendente = false;
+
+    function medir() {
+      pendente = false;
+
+      var curso = stage.offsetHeight - window.innerHeight;
+      if (curso <= 0) return;
+
+      var andado = (window.scrollY || window.pageYOffset) - stage.offsetTop;
+      var progresso = Math.max(0, Math.min(1, andado / curso));
+
+      // A troca acontece no miolo do palco: antes disso a obra
+      // bruta fica inteira, depois a casa pronta fica inteira.
+      var mistura = Math.max(0, Math.min(1, (progresso - 0.3) / 0.45));
+
+      cena2.style.setProperty('--cena2', mistura.toFixed(3));
+      atualizarProgresso(progresso);
+    }
+
+    window.addEventListener('scroll', function () {
+      if (pendente) return;
+      pendente = true;
+      requestAnimationFrame(medir);
+    }, { passive: true });
+
+    window.addEventListener('resize', medir);
+    medir();
+  }
+
   function iniciarVideo() {
     if (!video || !stage) return;
 
     // No celular o hero e uma imagem fixa, definida no CSS. O seek
     // quadro a quadro nao fica fluido em aparelho movel e ainda
-    // custaria alguns megabytes de rede.
+    // custaria alguns megabytes de rede. No lugar do video, a
+    // rolagem faz a segunda cena aparecer por cima da primeira.
     if (telaPequena) {
       video.remove();
+      trocaDeCenaNoCelular();
       return;
     }
 

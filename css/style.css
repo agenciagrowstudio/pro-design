@@ -486,6 +486,10 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
 }
 .stage__video { width: 100%; height: 100%; object-fit: cover; }
 
+/* Segunda cena, so no celular. A regra que a mostra vive no bloco
+   de 760px, junto com a imagem que ela carrega. */
+.stage__cena2 { display: none; }
+
 /* Veu permanente no topo, so para a leitura do cabecalho.
    Fica fora do scrim porque nao acompanha o desaparecimento dele. */
 .stage__media::after {
@@ -1814,9 +1818,39 @@ body.visor-aberto { overflow: hidden; }
   .stage__video { display: none; }
 
   /* No celular a cena fica limpa: sem veu sobre a foto e sem o
-     escurecimento do topo. */
+     escurecimento do topo. O escuro aparece so atras do texto do
+     hero, logo abaixo. */
   .stage__scrim { display: none; }
   .stage__media::after { display: none; }
+
+  /* A casa pronta entra por cima da obra bruta conforme a rolagem.
+     O script escreve --cena2 entre 0 e 1. */
+  .stage__cena2 {
+    display: block;
+    position: absolute;
+    inset: 0;
+    opacity: var(--cena2, 0);
+    background-image: url("../assets/img/offer-mobile.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  /* Veu so atras do bloco de texto, e desvanecendo nas bordas:
+     sobre a madeira clara o texto branco sozinho nao se le. */
+  .hero__main { position: relative; }
+  .hero__main::before {
+    content: "";
+    position: absolute;
+    inset: -28px -26px -34px -26px;
+    z-index: -1;
+    border-radius: 34px;
+    background: radial-gradient(115% 92% at 38% 46%,
+      rgba(10, 12, 15, .88) 0%,
+      rgba(10, 12, 15, .7) 48%,
+      rgba(10, 12, 15, .28) 78%,
+      rgba(10, 12, 15, 0) 100%);
+  }
 
   .hero { padding-top: calc(var(--topbar-h) + var(--header-h) + 24px); padding-bottom: 96px; }
   .hero__text { font-size: 15.5px; }
@@ -1825,15 +1859,12 @@ body.visor-aberto { overflow: hidden; }
   .hero__actions .btn { flex: 1 1 auto; }
   .scroll-hint { display: none; }
 
-  /* A segunda tela recebe o ultimo frame: sem o video, e o que
-     mantem a leitura de obra bruta virando casa pronta. */
+  /* A cena da casa pronta vive no palco agora, com a troca por
+     rolagem: esta tela so precisa do espaco. */
   .offer {
     min-height: 100vh;
     min-height: 100svh;
     padding: 56px 0;
-    background-image: url("../assets/img/offer-mobile.jpg");
-    background-size: cover;
-    background-position: center;
   }
   .ticket-wrap { max-width: none; }
   /* Empilhado, a dobra passa a ser a borda picotada do canhoto:
