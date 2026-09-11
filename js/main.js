@@ -626,20 +626,128 @@
   }
 
   /* =======================================================
-     9. FAQ: uma pergunta aberta por vez
+     9. TITULOS: entrada e paralaxe
+     Cada titulo sobe alguns pixels ao aparecer e, depois disso,
+     acompanha a rolagem com um deslocamento curto. O movimento
+     e pequeno de proposito: e para dar profundidade, nao para
+     chamar atencao.
      ======================================================= */
-  var perguntas = document.querySelectorAll('.qa');
-  perguntas.forEach(function (item) {
-    item.addEventListener('toggle', function () {
-      if (!item.open) return;
-      perguntas.forEach(function (outro) {
-        if (outro !== item) outro.open = false;
+  var titulos = Array.prototype.slice.call(
+    document.querySelectorAll('.section__title, .depo__titulo')
+  );
+  var titulosNaTela = [];
+
+  if (titulos.length && !reduzirMovimento && 'IntersectionObserver' in window) {
+    var olhoTitulos = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (entrada) {
+        var alvo = entrada.target;
+
+        if (entrada.isIntersecting) {
+          if (!alvo.classList.contains('is-dentro')) {
+            alvo.classList.add('is-dentro');
+            // Solta o transform da transicao: dai em diante quem
+            // manda nele e a rolagem, e ela precisa de resposta
+            // imediata.
+            setTimeout(function () { alvo.classList.add('is-pronto'); }, 900);
+          }
+          if (titulosNaTela.indexOf(alvo) === -1) titulosNaTela.push(alvo);
+        } else {
+          var i = titulosNaTela.indexOf(alvo);
+          if (i > -1) titulosNaTela.splice(i, 1);
+        }
       });
+    }, { threshold: 0 });
+
+    titulos.forEach(function (t) { olhoTitulos.observe(t); });
+
+    var AMPLITUDE = 12;
+    var pendente = false;
+
+    function moverTitulos() {
+      pendente = false;
+      var meio = window.innerHeight / 2;
+
+      titulosNaTela.forEach(function (t) {
+        if (!t.classList.contains('is-pronto')) return;
+        var caixa = t.getBoundingClientRect();
+        var centro = caixa.top + caixa.height / 2;
+        // -1 no topo da tela, +1 embaixo
+        var posicao = Math.max(-1, Math.min(1, (centro - meio) / meio));
+        t.style.setProperty('--par', (posicao * AMPLITUDE).toFixed(1) + 'px');
+      });
+    }
+
+    window.addEventListener('scroll', function () {
+      if (pendente) return;
+      pendente = true;
+      requestAnimationFrame(moverTitulos);
+    }, { passive: true });
+
+    moverTitulos();
+  }
+
+  /* =======================================================
+     10. FAQ: uma pergunta aberta por vez
+     ======================================================= */
+  var perguntas = Array.prototype.slice.call(document.querySelectorAll('.qa'));
+
+  // O <details> abre e fecha de uma vez, sem meio termo. Aqui o
+  // clique e interceptado para a resposta crescer e encolher em
+  // altura, com o texto entrando um pouco depois.
+  function animarAbertura(item, abrir, aoTerminar) {
+    var caixa = item.querySelector('.qa__a');
+    if (!caixa || reduzirMovimento || !item.animate) {
+      item.open = abrir;
+      if (aoTerminar) aoTerminar();
+      return;
+    }
+
+    // Enquanto anima, a altura e controlada aqui: sem isso o
+    // conteudo empurraria a pagina de uma vez so.
+    if (abrir) item.open = true;
+
+    var altura = caixa.scrollHeight;
+    // O respiro de baixo entra e sai junto com a altura, senao o
+    // fechamento para nele e o ultimo trecho some de uma vez.
+    var respiro = getComputedStyle(caixa).paddingBottom;
+
+    item.classList.add('is-animando');
+
+    var animacao = caixa.animate(
+      [
+        { height: (abrir ? 0 : altura) + 'px', paddingBottom: abrir ? '0px' : respiro, opacity: abrir ? 0 : 1 },
+        { height: (abrir ? altura : 0) + 'px', paddingBottom: abrir ? respiro : '0px', opacity: abrir ? 1 : 0 }
+      ],
+      { duration: abrir ? 380 : 300, easing: 'cubic-bezier(.22,.61,.36,1)' }
+    );
+
+    animacao.onfinish = function () {
+      item.classList.remove('is-animando');
+      if (!abrir) item.open = false;
+      if (aoTerminar) aoTerminar();
+    };
+  }
+
+  perguntas.forEach(function (item) {
+    var titulo = item.querySelector('.qa__q');
+    if (!titulo) return;
+
+    titulo.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      // Uma aberta por vez: a que estava aberta fecha junto
+      if (!item.open) {
+        perguntas.forEach(function (outro) {
+          if (outro !== item && outro.open) animarAbertura(outro, false);
+        });
+      }
+
+      animarAbertura(item, !item.open);
     });
   });
 
   /* =======================================================
-     10. FORMULARIOS DE ORCAMENTO
+     11. FORMULARIOS DE ORCAMENTO
      Vale para os dois: o curto, no canhoto do cupom, e o
      completo, na secao Contact. Sem backend, monta a mensagem
      e abre o cliente de email. Com data-endpoint preenchido,

@@ -878,6 +878,30 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
   margin-bottom: 64px;
 }
 .section__title { font-size: clamp(32px, 3.8vw, 52px); }
+
+/* Entrada e paralaxe dos titulos. O script marca is-dentro quando
+   o titulo aparece e is-pronto quando a entrada termina: a partir
+   dai o transform pertence a rolagem e nao pode ter transicao,
+   senao o movimento fica arrastado. */
+.section__title,
+.depo__titulo {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity .8s var(--ease), transform .8s var(--ease);
+  will-change: transform;
+}
+.section__title.is-dentro,
+.depo__titulo.is-dentro {
+  opacity: 1;
+  transform: translateY(var(--par, 0px));
+}
+.section__title.is-pronto,
+.depo__titulo.is-pronto { transition: opacity .8s var(--ease); }
+
+@media (prefers-reduced-motion: reduce) {
+  .section__title,
+  .depo__titulo { opacity: 1; transform: none; }
+}
 .section__intro {
   font-size: 17px;
   line-height: 1.7;
@@ -1102,11 +1126,15 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
   transition: border-color .25s var(--ease), box-shadow .25s var(--ease);
 }
 .qa[open] { border-color: var(--borda-forte); box-shadow: var(--sombra-sm); }
+/* Durante a animacao a altura e o script que manda, entao a
+   resposta nao pode ter altura propria nem sobrar do cartao. */
+.qa.is-animando .qa__a { overflow: hidden; }
 .qa__q {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
+  user-select: none;
   padding: 22px 26px;
   cursor: pointer;
   list-style: none;
@@ -1206,7 +1234,6 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
    formulario pesar mais que o mapa ao lado. */
 .formcard {
   background: var(--superficie);
-  border: 1px solid var(--borda);
   border-radius: var(--raio-lg);
   padding: 34px;
 }
@@ -1235,9 +1262,13 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
 .select select {
   width: 100%;
   padding: 14px 16px;
-  border: 1px solid var(--borda-forte);
+  border: 0;
   border-radius: var(--raio-sm);
   background: var(--branco);
+  /* Sem borda, o campo branco sobre o cinza claro do cartao
+     precisa de um apoio para nao sumir: uma sombra rasa da o
+     limite sem virar contorno. */
+  box-shadow: 0 1px 2px rgba(16, 18, 21, .07);
   font-family: var(--fonte-texto);
   font-size: 15px;
   color: var(--tinta);
@@ -1249,8 +1280,7 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
 .field textarea:focus,
 .select select:focus {
   outline: none;
-  border-color: var(--acento);
-  box-shadow: 0 0 0 3px rgba(194, 65, 12, .12);
+  box-shadow: 0 0 0 2px var(--acento);
 }
 
 .select { position: relative; }
@@ -1274,7 +1304,7 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
 }
 .field.has-error input,
 .field.has-error select,
-.field.has-error textarea { border-color: #c0271a; background: #fdf2f1; }
+.field.has-error textarea { background: #fdf2f1; box-shadow: 0 0 0 2px #c0271a; }
 .field.has-error .field__error { display: block; }
 
 .check { display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14.5px; color: var(--tinta-media); }
