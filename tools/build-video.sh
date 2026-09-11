@@ -10,9 +10,12 @@ SRC="${1:-}"
 [ -f "$SRC" ] || { echo "Arquivo nao encontrado: $SRC"; exit 1; }
 
 FPS=30
+FPS_MOBILE=4
+LARGURA_MOBILE=768
 OUT_DIR="assets/video"
 IMG_DIR="assets/img"
-mkdir -p "$OUT_DIR" "$IMG_DIR"
+FRAMES_DIR="assets/frames"
+mkdir -p "$OUT_DIR" "$IMG_DIR" "$FRAMES_DIR"
 
 echo "Origem:"
 ffprobe -v error -select_streams v:0 -show_entries stream=width,height,r_frame_rate,nb_frames \
@@ -25,11 +28,19 @@ ffmpeg -y -v error -i "$SRC" -an \
   -c:v libx264 -preset slow -crf 25 -g 1 -keyint_min 1 -sc_threshold 0 \
   -movflags +faststart "$OUT_DIR/hero-construction.mp4"
 
-echo "Gerando versao mobile 854p @ ${FPS}fps ..."
+# No celular nao roda video: o seek quadro a quadro nao fica fluido em
+# aparelho movel. O mesmo movimento vira uma sequencia de imagens que o
+# canvas desenha conforme a rolagem.
+echo "Gerando a sequencia de quadros do celular ..."
+rm -f "$FRAMES_DIR"/*.webp
 ffmpeg -y -v error -i "$SRC" -an \
-  -vf "fps=${FPS},scale=854:-2,format=yuv420p" \
-  -c:v libx264 -preset slow -crf 28 -g 1 -keyint_min 1 -sc_threshold 0 \
-  -movflags +faststart "$OUT_DIR/hero-construction-mobile.mp4"
+  -vf "fps=${FPS_MOBILE},scale=${LARGURA_MOBILE}:-2" \
+  -c:v libwebp -lossless 0 -q:v 64 -compression_level 6 \
+  -f image2 "$FRAMES_DIR/f%02d.webp"
+
+TOTAL=$(ls "$FRAMES_DIR"/*.webp | wc -l | tr -d ' ')
+echo "Quadros gerados: $TOTAL"
+echo "Se esse numero mudar, ajuste data-total no canvas heroFrames do index.html."
 
 echo "Gerando poster ..."
 ffmpeg -y -v error -ss 0 -i "$SRC" -frames:v 1 -vf "scale=1600:-2" -q:v 4 "$IMG_DIR/hero-poster.jpg"
@@ -37,3 +48,4 @@ ffmpeg -y -v error -ss 0 -i "$SRC" -frames:v 1 -vf "scale=1600:-2" -q:v 4 "$IMG_
 echo ""
 echo "Pronto:"
 ls -lh "$OUT_DIR" "$IMG_DIR/hero-poster.jpg"
+du -ch "$FRAMES_DIR"/*.webp | tail -1

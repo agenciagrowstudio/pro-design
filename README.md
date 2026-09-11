@@ -32,7 +32,7 @@ O menu é de ancoragem, tudo na mesma página:
 | Get a free estimate | `#contact` | formulário |
 
 A oferta de 10% fecha o scroll do vídeo: quando a casa aparece pronta, entra um ticket
-escuro com o desconto, o código FIRST10 no canhoto e os dois botões. Os recortes do ticket
+escuro com o desconto e, no canhoto, um formulário curto de nome e telefone. Os recortes do ticket
 são furos reais, feitos com `mask` de gradientes radiais, porque o fundo é vídeo e muda de
 cor a cada frame. A sombra fica no envoltório (`drop-shadow`), já que a máscara cortaria um
 `box-shadow`. No celular o ticket empilha e a dobra vira a borda picotada do canhoto. Por isso não existe uma faixa de promoção separada no meio da página.
@@ -49,10 +49,16 @@ Detalhes que fazem isso funcionar:
 - o vídeo é recodificado com **um keyframe em cada frame** (`-g 1`), senão o seek trava;
 - depois de um segundo o arquivo é baixado inteiro e trocado por um blob local, o que
   elimina as requisições por range a cada movimento do scroll;
-- em telas de até 760px não há vídeo nenhum: o `<video>` sai do DOM e o palco usa duas
-  imagens fixas, `hero-mobile.jpg` na primeira tela e `offer-mobile.jpg` (último frame) na
-  tela da oferta, mantendo a leitura de obra bruta virando casa pronta. O seek quadro a
-  quadro não fica fluido em aparelho móvel e ainda custaria megabytes de rede;
+- em telas de até 760px não há vídeo nenhum: o `<video>` sai do DOM e o mesmo movimento
+  roda como **sequência de imagens desenhada em canvas** (`assets/frames/f01.webp` a
+  `f28.webp`, 768px, 1,0 MB no total). O scroll escolhe o quadro, então a fluidez não
+  depende do decodificador do aparelho, que foi o que travou quando isso era um `<video>`
+  com seek. Os quadros são baixados em fila, não todos de uma vez, e o canvas só aparece
+  depois que o primeiro chega;
+- enquanto o primeiro quadro carrega (e se o carregamento falhar, ou com
+  `prefers-reduced-motion`) ficam as imagens fixas do CSS: `hero-mobile.jpg` na primeira
+  tela e `offer-mobile.jpg` na tela da oferta. A classe `tem-frames` no `#stage` é o que
+  troca um pelo outro;
 - com `prefers-reduced-motion` o vídeo fica parado no primeiro frame;
 - o tween só é registrado depois que a duração do vídeo é conhecida, e a checagem usa
   `readyState` em vez de esperar apenas o evento `loadedmetadata`: com o arquivo em cache o
@@ -71,8 +77,11 @@ Detalhes que fazem isso funcionar:
 bash tools/build-video.sh "/caminho/do/novo-video.mp4"
 ```
 
-O script gera as duas versões (1280p e 854p, 30fps) e o poster. Nada mais precisa mudar
-no HTML.
+O script gera o vídeo de desktop (1280p, 30fps, keyframe em cada frame), a sequência de
+quadros do celular (`assets/frames`, 768px, 4fps) e o poster.
+
+Se a contagem de quadros mudar, ajuste `data-total` no `<canvas id="heroFrames">` do
+`index.html`. O script imprime o número no fim.
 
 ### Cabeçalho durante o vídeo
 
@@ -127,18 +136,23 @@ alimenta os filtros, e o `data-tone`, que define a cor da etiqueta.
 Proporção recomendada: 4:3 nos cartões normais e 16:9 nos cartões largos
 (`shot--wide`). O corte é feito por `object-fit: cover`, então imagens maiores funcionam.
 
-## Formulário
+## Formulários
+
+São dois, com o mesmo comportamento: o curto no canhoto do ticket da oferta
+(`#offerForm`, nome e telefone) e o completo na seção Contact (`#estimateForm`).
 
 Sem backend, o envio abre o cliente de email do visitante com tudo preenchido.
 
 Para receber por um serviço externo (Formspree, Basin, Netlify Forms), basta preencher o
-atributo do formulário no `index.html`:
+atributo `data-endpoint` no `index.html`. Vale para os dois, e cada um pode ter o seu:
 
 ```html
 <form class="form" id="estimateForm" data-endpoint="https://formspree.io/f/SEU_ID" novalidate>
 ```
 
-O script passa a enviar por POST e mostra a confirmação na própria página.
+O script passa a enviar por POST e mostra a confirmação na própria página. Qualquer
+`form` com a classe `.form` é ligado automaticamente, e a confirmação é o `.form__done`
+que estiver dentro dele.
 
 ## Design
 

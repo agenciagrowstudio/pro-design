@@ -62,14 +62,128 @@
     }
   }
 
+  /* No celular, no lugar do video: uma sequencia de imagens
+     desenhada em canvas. O scroll escolhe o quadro, entao o
+     movimento acompanha o dedo sem depender do decodificador
+     de video do aparelho, que era o que travava antes. */
+  function iniciarFramesMobile() {
+    var canvas = document.getElementById('heroFrames');
+    if (!canvas || !stage || reduzirMovimento) return;
+    if (!window.gsap || !window.ScrollTrigger) return;
+
+    var total = parseInt(canvas.getAttribute('data-total'), 10) || 0;
+    if (!total) return;
+
+    var ctx = canvas.getContext('2d');
+    var quadros = new Array(total);
+    var prontos = new Array(total);
+    var desenhado = -1;
+    var ultimoProgresso = 0;
+    var revelado = false;
+
+    function caminho(i) {
+      return 'assets/frames/f' + (i < 9 ? '0' : '') + (i + 1) + '.webp';
+    }
+
+    // O quadro pedido pode ainda nao ter chegado: nesse caso vale
+    // o mais proximo que ja esta em memoria, para o movimento
+    // nunca parar enquanto o resto baixa.
+    function maisProximoPronto(alvo) {
+      if (prontos[alvo]) return alvo;
+      for (var d = 1; d < total; d++) {
+        if (alvo - d >= 0 && prontos[alvo - d]) return alvo - d;
+        if (alvo + d < total && prontos[alvo + d]) return alvo + d;
+      }
+      return -1;
+    }
+
+    function desenhar(progresso) {
+      ultimoProgresso = progresso;
+      var alvo = Math.round(progresso * (total - 1));
+      if (alvo < 0) alvo = 0;
+      if (alvo > total - 1) alvo = total - 1;
+
+      var i = maisProximoPronto(alvo);
+      if (i < 0 || i === desenhado) return;
+
+      var img = quadros[i];
+      var escala = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+      var w = img.naturalWidth * escala;
+      var h = img.naturalHeight * escala;
+      ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+      desenhado = i;
+    }
+
+    // O canvas tem a resolucao da tela vezes o DPR, limitado a 2:
+    // acima disso o ganho nao se ve e o desenho comeca a pesar.
+    function dimensionar() {
+      var caixa = canvas.getBoundingClientRect();
+      if (!caixa.width || !caixa.height) return;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var w = Math.round(caixa.width * dpr);
+      var h = Math.round(caixa.height * dpr);
+      if (w === canvas.width && h === canvas.height) return;
+      canvas.width = w;
+      canvas.height = h;
+      desenhado = -1;
+      desenhar(ultimoProgresso);
+    }
+
+    function carregar(i, aoTerminar) {
+      var img = new Image();
+      img.decoding = 'async';
+      img.onload = function () {
+        quadros[i] = img;
+        prontos[i] = true;
+        if (!revelado) {
+          revelado = true;
+          stage.classList.add('tem-frames');
+          dimensionar();
+        }
+        desenhar(ultimoProgresso);
+        if (aoTerminar) aoTerminar();
+      };
+      img.onerror = function () { if (aoTerminar) aoTerminar(); };
+      img.src = caminho(i);
+    }
+
+    // Em fila, e nao todos de uma vez: um celular em rede fraca
+    // entregaria os 32 pedidos ao mesmo tempo e o primeiro quadro
+    // demoraria tanto quanto o ultimo.
+    function carregarEmFila(i) {
+      if (i >= total) return;
+      carregar(i, function () { carregarEmFila(i + 1); });
+    }
+
+    carregar(0, function () { carregarEmFila(1); });
+
+    gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.config({ ignoreMobileResize: true });
+
+    ScrollTrigger.create({
+      trigger: stage,
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: true,
+      onUpdate: function (self) {
+        desenhar(self.progress);
+        atualizarProgresso(self.progress);
+      }
+    });
+
+    window.addEventListener('resize', dimensionar);
+    window.addEventListener('orientationchange', dimensionar);
+  }
+
   function iniciarVideo() {
     if (!video || !stage) return;
 
-    // No celular o hero e uma imagem fixa, definida no CSS. O seek
-    // quadro a quadro nao fica fluido em aparelho movel e ainda
-    // custaria alguns megabytes de rede.
+    // No celular o <video> sai de cena: o seek quadro a quadro nao
+    // fica fluido em aparelho movel. O mesmo movimento roda como
+    // sequencia de imagens desenhada em canvas.
     if (telaPequena) {
       video.remove();
+      iniciarFramesMobile();
       return;
     }
 
@@ -285,12 +399,12 @@
   });
 
   /* =======================================================
-     7. FORMULARIO DE ORCAMENTO
-     Sem backend: monta a mensagem e abre o cliente de email.
-     Com data-endpoint preenchido, envia por POST.
+     7. FORMULARIOS DE ORCAMENTO
+     Vale para os dois: o curto, no canhoto do cupom, e o
+     completo, na secao Contact. Sem backend, monta a mensagem
+     e abre o cliente de email. Com data-endpoint preenchido,
+     envia por POST.
      ======================================================= */
-  var form = document.getElementById('estimateForm');
-  var aviso = document.getElementById('formDone');
   var EMAIL_DESTINO = 'contact@prodesignpainting.com';
 
   function marcarErro(campo, erro) {
@@ -298,17 +412,16 @@
     if (caixa) caixa.classList.toggle('has-error', erro);
   }
 
-  function validar() {
+  function validar(form) {
     var ok = true;
-    var obrigatorios = form.querySelectorAll('[required]');
 
-    obrigatorios.forEach(function (campo) {
+    form.querySelectorAll('[required]').forEach(function (campo) {
       var vazio = !campo.value.trim();
       marcarErro(campo, vazio);
       if (vazio) ok = false;
     });
 
-    var email = form.querySelector('#f-email');
+    var email = form.querySelector('input[type="email"]');
     if (email && email.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())) {
       marcarErro(email, true);
       ok = false;
@@ -317,14 +430,16 @@
     return ok;
   }
 
-  if (form) {
+  function ligarFormulario(form) {
+    var aviso = form.querySelector('.form__done');
+
     form.addEventListener('input', function (e) {
       if (e.target.closest('.field.has-error')) marcarErro(e.target, false);
     });
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      if (!validar()) {
+      if (!validar(form)) {
         var primeiro = form.querySelector('.field.has-error input, .field.has-error select');
         if (primeiro) primeiro.focus();
         return;
@@ -365,6 +480,8 @@
       concluir();
     });
   }
+
+  document.querySelectorAll('form.form').forEach(ligarFormulario);
 
   /* =======================================================
      Inicializacao

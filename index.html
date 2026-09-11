@@ -139,6 +139,13 @@
            playsinline muted preload="auto"
            poster="assets/img/hero-poster.jpg"
            data-src="assets/video/hero-construction.mp4"></video>
+
+    <!-- No celular o mesmo movimento roda como sequencia de imagens
+         desenhada aqui: o seek quadro a quadro de um <video> nao e
+         fluido em aparelho movel. So aparece quando o primeiro
+         quadro carrega; ate la fica a imagem fixa do CSS. -->
+    <canvas class="stage__frames" id="heroFrames" data-total="28" aria-hidden="true"></canvas>
+
     <div class="stage__scrim"></div>
   </div>
 
@@ -192,21 +199,50 @@
             <p class="ticket__figure">10<span>%</span></p>
             <p class="ticket__word">OFF</p>
             <p class="ticket__desc">
-              Your first project with <span class="brand"><b>PRO</b>DESIGN</span>. Mention the code when you ask
-              for your estimate.
+              Your first project with <span class="brand"><b>PRO</b>DESIGN</span>. Leave your name and phone
+              number, and we call you back with a free estimate.
             </p>
-            <span class="ticket__barcode" aria-hidden="true"></span>
-          </div>
-
-          <div class="ticket__stub">
-            <img class="ticket__mark" src="assets/logo/prodesign-mark-light.png" alt="" width="126" height="128">
-            <span class="ticket__label">Code</span>
-            <p class="ticket__code">FIRST10</p>
-            <ul class="ticket__terms">
+            <ul class="ticket__terms ticket__terms--inline">
               <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>New customers</li>
               <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Interior or exterior</li>
               <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Free estimate</li>
             </ul>
+            <span class="ticket__barcode" aria-hidden="true"></span>
+          </div>
+
+          <!-- O canhoto do cupom virou o formulario curto: dois campos e
+               o botao. O formulario completo continua na secao Contact. -->
+          <div class="ticket__stub">
+            <img class="ticket__mark" src="assets/logo/prodesign-mark-light.png" alt="" width="126" height="128">
+            <span class="ticket__label">Free estimate</span>
+            <p class="ticket__form-title">Claim your 10% off</p>
+
+            <form class="form form--dark" id="offerForm" data-endpoint="" novalidate>
+              <div class="field">
+                <label for="o-name">Full name</label>
+                <input id="o-name" name="name" type="text" autocomplete="name" required placeholder="Your name">
+                <span class="field__error">Please tell us your name.</span>
+              </div>
+
+              <div class="field">
+                <label for="o-phone">Phone number</label>
+                <input id="o-phone" name="phone" type="tel" autocomplete="tel" required placeholder="(000) 000-0000">
+                <span class="field__error">A phone number helps us reach you.</span>
+              </div>
+
+              <input type="hidden" name="promo" value="yes">
+              <input type="hidden" name="service" value="10% off, first project">
+
+              <button class="btn btn--accent btn--block" type="submit">
+                Send my request
+                <svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+              </button>
+
+              <p class="form__done" hidden role="status">
+                <svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>
+                <span>Thank you. We will call you shortly.</span>
+              </p>
+            </form>
           </div>
         </article>
         </div>
@@ -221,13 +257,49 @@
             (857) 333-9140
           </a>
         </div>
+
       </div>
     </section>
 
   </div>
 </div>
 
-<!-- ===== Sobre, primeira secao clara depois do video ===== -->
+<!-- ===== Numeros da operacao, primeira faixa clara =====
+     Valores de exemplo, confirmar com o cliente antes de publicar. -->
+<section class="section stats-section">
+  <!-- Figura decorativa: sobe alem do topo da faixa e invade a cena
+       do palco, como no desenho. Some abaixo de 1200px, onde nao ha
+       margem lateral sobrando para ela. -->
+  <img class="stats__figura" src="assets/img/man-estatistc.png" alt=""
+       width="231" height="347" loading="lazy" decoding="async">
+
+  <div class="wrap">
+    <ul class="stats">
+      <li class="stats__item">
+        <svg class="ico stats__ico" aria-hidden="true"><use href="#i-clock"/></svg>
+        <p class="stats__num">12<span>+</span></p>
+        <p class="stats__label">Years finishing homes</p>
+      </li>
+      <li class="stats__item">
+        <svg class="ico stats__ico" aria-hidden="true"><use href="#i-house"/></svg>
+        <p class="stats__num">450<span>+</span></p>
+        <p class="stats__label">Homes and businesses served</p>
+      </li>
+      <li class="stats__item">
+        <svg class="ico stats__ico" aria-hidden="true"><use href="#i-layers"/></svg>
+        <p class="stats__num">5</p>
+        <p class="stats__label">Services under one crew</p>
+      </li>
+      <li class="stats__item">
+        <svg class="ico stats__ico" aria-hidden="true"><use href="#i-shield-check"/></svg>
+        <p class="stats__num">100<span>%</span></p>
+        <p class="stats__label">Free estimates, no obligation</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== Sobre, agora a segunda secao clara ===== -->
 <section class="section about" id="about">
   <div class="wrap">
     <header class="section__head">
