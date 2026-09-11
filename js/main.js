@@ -389,6 +389,23 @@
   var nav = document.getElementById('nav');
   var burger = document.getElementById('burger');
 
+  /* A faixa do navegador no celular segue o topo da pagina: escura
+     enquanto a cena do video esta em cima, clara quando o cabecalho
+     vira fundo branco. Sem isso ela fica presa numa cor so e briga
+     com metade do site. */
+  var metaTema = document.querySelector('meta[name="theme-color"]');
+  var TEMA_ESCURO = '#0c0e12';
+  var TEMA_CLARO = '#ffffff';
+  var temaAtual = null;
+
+  function pintarFaixaDoNavegador(claro) {
+    if (!metaTema) return;
+    var cor = claro ? TEMA_CLARO : TEMA_ESCURO;
+    if (cor === temaAtual) return;
+    temaAtual = cor;
+    metaTema.setAttribute('content', cor);
+  }
+
   function aoRolar() {
     var y = window.scrollY || window.pageYOffset;
     document.body.classList.toggle('is-scrolled', y > 24);
@@ -404,10 +421,13 @@
       // Visivel parado no topo, escondido enquanto o video roda,
       // de volta ja em fundo claro quando o palco termina.
       header.classList.toggle('is-hidden', y > 24 && !fimDoPalco);
+
+      pintarFaixaDoNavegador(fimDoPalco);
     } else {
       // Sem o palco do video o cabecalho fica sempre sobre fundo claro
       header.classList.add('is-solid');
       header.classList.remove('is-hidden');
+      pintarFaixaDoNavegador(true);
     }
   }
 
@@ -417,6 +437,7 @@
     burger.setAttribute('aria-expanded', 'false');
     burger.setAttribute('aria-label', 'Open menu');
     document.body.classList.remove('is-locked');
+    aoRolar();
   }
 
   if (burger && nav) {
@@ -425,6 +446,11 @@
       burger.setAttribute('aria-expanded', aberto ? 'true' : 'false');
       burger.setAttribute('aria-label', aberto ? 'Close menu' : 'Open menu');
       document.body.classList.toggle('is-locked', aberto);
+
+      // O menu cobre a tela inteira no escuro: a faixa do
+      // navegador acompanha enquanto ele estiver aberto.
+      if (aberto) pintarFaixaDoNavegador(false);
+      else aoRolar();
     });
 
     nav.addEventListener('click', function (e) {
