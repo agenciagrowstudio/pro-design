@@ -716,7 +716,7 @@
      chamar atencao.
      ======================================================= */
   var titulos = Array.prototype.slice.call(
-    document.querySelectorAll('.section__title, .depo__titulo')
+    document.querySelectorAll('.section__title, .depo__titulo, .section__head .eyebrow, .depo__centro .pill')
   );
   var titulosNaTela = [];
 
