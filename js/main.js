@@ -86,6 +86,11 @@
 
       cena2.style.setProperty('--cena2', mistura.toFixed(3));
       atualizarProgresso(progresso);
+
+      // O veu existe para o texto do hero. Quando a casa pronta
+      // entra, quem carrega o cupom e o proprio cartao escuro:
+      // manter o veu so sujaria a cena.
+      if (scrim) scrim.style.opacity = (1 - mistura).toFixed(3);
     }
 
     window.addEventListener('scroll', function () {
