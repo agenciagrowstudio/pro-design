@@ -419,14 +419,21 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
   letter-spacing: -.005em;
   line-height: 1;
 }
-/* O PRO sai expandido e o DESIGN vem menor e com as letras mais
-   soltas: a marca ganha contraste de largura e de ritmo, e nao so
-   de peso. O <i> e so o gancho do DESIGN, sem italico. */
+/* As duas metades da marca na mesma fonte expandida e no mesmo
+   corpo: o que separa uma da outra e so o peso, cheio no PRO e
+   leve no DESIGN. O <i> e so o gancho do DESIGN, sem italico. */
+.logo__name b,
+.footer__name b,
+.brand b,
+.logo__name i,
+.footer__name i,
+.brand i {
+  font-family: var(--fonte-marca);
+  font-variation-settings: "wdth" 125;
+}
 .logo__name b,
 .footer__name b,
 .brand b {
-  font-family: var(--fonte-marca);
-  font-variation-settings: "wdth" 125;
   font-weight: 700;
   letter-spacing: -.005em;
 }
@@ -434,7 +441,7 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
 .footer__name i,
 .brand i {
   font-style: normal;
-  font-size: .88em;
+  font-weight: 300;
   letter-spacing: 1px;
 }
 .logo__name b { font-weight: 700; }
