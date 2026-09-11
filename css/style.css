@@ -1908,9 +1908,16 @@ body.visor-aberto { overflow: hidden; }
   /* Empilhado a margem negativa da versao larga nao serve: aqui
      os termos vem logo abaixo da chamada. */
   .ticket__desc { margin-top: 14px; margin-bottom: 0; max-width: none; }
+  /* Empilhado, o numero e a palavra ficam na mesma linha: em pe
+     um sobre o outro eles comiam metade da altura do cupom. */
+  .ticket__figure,
+  .ticket__word {
+    display: inline-block;
+    vertical-align: baseline;
+  }
   .ticket__figure { font-size: 74px; }
   .ticket__figure span { font-size: 34px; }
-  .ticket__word { font-size: 34px; }
+  .ticket__word { font-size: 34px; margin: 0 0 0 14px; }
   .ticket__barcode { height: 28px; margin-top: 16px; }
   .ticket__terms--inline { margin-top: 20px; gap: 8px 16px; }
   .ticket__form-title { font-size: 19px; margin: 12px 0 14px; }
