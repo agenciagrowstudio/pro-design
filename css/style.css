@@ -421,13 +421,11 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
 }
 /* As duas metades da marca na mesma fonte expandida e no mesmo
    corpo: o que separa uma da outra e so o peso, cheio no PRO e
-   leve no DESIGN. O <i> e so o gancho do DESIGN, sem italico. */
+   leve no DESIGN. */
 .logo__name b,
 .footer__name b,
 .brand b,
-.logo__name i,
-.footer__name i,
-.brand i {
+.marca__leve {
   font-family: var(--fonte-marca);
   font-variation-settings: "wdth" 125;
 }
@@ -437,10 +435,7 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
   font-weight: 700;
   letter-spacing: -.005em;
 }
-.logo__name i,
-.footer__name i,
-.brand i {
-  font-style: normal;
+.marca__leve {
   font-weight: 300;
   letter-spacing: 1px;
 }
