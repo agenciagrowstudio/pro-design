@@ -1158,6 +1158,9 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
   font-size: 18px;
   line-height: 1.25;
   letter-spacing: -.005em;
+  /* Cinza, e nao tinta cheia: quem tem que puxar o olho no
+     mosaico e a foto. */
+  color: var(--tinta-media);
 }
 .cat__qtd {
   flex: none;
@@ -1388,7 +1391,7 @@ body.is-locked .header .logo__img--claro { opacity: 1; }
   font-size: 13px;
   color: var(--tinta-fraca);
 }
-.form__foot .ico { width: 16px; height: 16px; color: var(--teal); }
+.form__foot .ico { width: 16px; height: 16px; color: var(--tinta-fraca); }
 
 .form__done {
   display: flex;
