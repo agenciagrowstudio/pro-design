@@ -267,6 +267,11 @@
   function trocarAtributos(paraPortugues) {
     ATRIBUTOS.forEach(function (attr) {
       document.querySelectorAll('[' + attr + ']').forEach(function (el) {
+        // O cartao de compartilhamento e lido por robo no HTML
+        // servido, nao no DOM: traduzir aqui nao muda nada la e
+        // ainda sujava a lista de textos sem traducao.
+        if (el.hasAttribute('data-sem-traducao')) return;
+
         var guardado = el.getAttribute('data-orig-' + attr);
         var atual = el.getAttribute(attr);
 

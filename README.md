@@ -147,6 +147,29 @@ aparece inteira, sem corte.
 Fecha com Esc, com clique fora ou no X. As setas do teclado e o arrastar do dedo trocam
 de foto, e a navegação é circular. Ao fechar, o foco volta para o cartão que abriu.
 
+## Cartão de compartilhamento
+
+Quando alguém cola o link do site no WhatsApp, no Facebook ou no LinkedIn, o robô desses
+aplicativos lê as tags Open Graph do `<head>` e monta a miniatura. A imagem é
+`assets/img/og-image.jpg`, um recorte 1200x630 da cena do hero, com 173 KB.
+
+Três regras que esse cartão não perdoa:
+
+1. **As URLs precisam ser absolutas.** Caminho relativo faz o WhatsApp desistir da imagem e
+   mostrar só o texto. Estão apontando para `https://pro-design-rho.vercel.app`.
+2. **A imagem precisa estar publicada.** O robô busca de fora, então ela só aparece depois
+   do deploy, nunca em ambiente local.
+3. **O WhatsApp guarda o que buscou.** Se o cartão mudar, o link já compartilhado continua
+   mostrando a versão antiga por um tempo. Para forçar, use o depurador do Facebook em
+   developers.facebook.com/tools/debug e clique em "Scrape Again".
+
+Ao trocar para o domínio definitivo, atualize o endereço em três lugares do `index.html`:
+o `<link rel="canonical">`, as tags `og:url`/`og:image`/`twitter:image` e o campo `image`
+do bloco de dados estruturados.
+
+As tags levam `data-sem-traducao`, então o seletor de idioma não mexe nelas: o robô lê o
+HTML servido, não o que o script alterou na tela.
+
 ## Idiomas
 
 O site nasce em inglês. O seletor no cabeçalho troca para português do Brasil e a escolha
