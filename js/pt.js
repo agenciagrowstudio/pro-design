@@ -56,16 +56,21 @@ window.TRADUCAO_PT = {
   'Services under one crew': 'Serviços com uma equipe só',
 
   /* ---------- Galeria ---------- */
-  'The work': 'O trabalho',
-  'Five services.': 'Cinco serviços.',
-  'One crew.': 'Uma equipe.',
-  'Painting inside and out, finish carpentry, drywall and deck washing, all done by the same crew. Nothing gets lost between trades, and the finish matches from the baseboard to the ceiling. Open a service to see the work.':
-    'Pintura por dentro e por fora, carpintaria de acabamento, drywall e lavagem de deck, tudo feito pela mesma equipe. Nada se perde entre um serviço e outro, e o acabamento combina do rodapé ao teto. Abra um serviço para ver o trabalho.',
+  'The work,': 'O trabalho,',
+  'all in one place.': 'tudo num lugar só.',
+  'Exteriors, interiors, decks, carpentry and drywall, all from our own jobs. Tap any photo to see it full size.':
+    'Exteriores, interiores, decks, carpintaria e drywall, tudo de obras nossas. Toque em qualquer foto para ver em tamanho cheio.',
+  'See more photos': 'Ver mais fotos',
+  /* Legendas do visualizador, lidas pelo script */
+  'Exterior work': 'Trabalho externo',
+  'Exterior painting, before': 'Pintura externa, antes',
+  'Exterior painting, after': 'Pintura externa, depois',
   'Interior painting': 'Pintura interna',
-  'Exterior painting': 'Pintura externa',
-  'Finish carpentry': 'Carpintaria de acabamento',
-  'Drywall taping': 'Rejunte de drywall',
-  'Deck washing': 'Lavagem de deck',
+  'Cabinet painting': 'Pintura de armários',
+  'Deck': 'Deck',
+  'Deck painting and carpentry': 'Pintura e carpintaria de deck',
+  'Carpentry': 'Carpintaria',
+  'Drywall and taping': 'Drywall e rejunte',
 
   /* ---------- Sobre ---------- */
   'What we do': 'O que fazemos',

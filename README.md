@@ -8,11 +8,11 @@ build: são arquivos estáticos que rodam em qualquer hospedagem.
 ```
 index.html                      página inteira, com âncoras por seção
 css/style.css                   folha única (tokens no :root)
-js/main.js                      vídeo por scroll, idioma, menu, galeria, FAQ, formulários
+js/main.js                      vídeo por scroll, idioma, menu, quadro de fotos, FAQ, formulários
 js/pt.js                        dicionário da tradução para português
-assets/video/                   vídeo do hero (desktop e mobile)
+assets/video/                   vídeo do hero e time-lapse do quadro de fotos
 assets/img/hero-poster.jpg      primeiro frame, exibido antes do vídeo carregar
-assets/img/projects/            fotos reais dos projetos (ainda vazia)
+assets/img/projects/            fotos reais enviadas pelo cliente (cheia e thumb/)
 assets/logo/                    marca em PNG (versão clara e escura) e favicon
 tools/build-video.sh            prepara o vídeo para o scroll
 .claude/launch.json             servidor local de desenvolvimento
@@ -27,8 +27,8 @@ O menu é de ancoragem, tudo na mesma página:
 | Home | `#home` | primeira tela, sobre o vídeo |
 | (sem menu) | `#offer` | segunda tela, oferta de 10% no último frame |
 | About | `#about` | primeira seção clara, com os padrões de trabalho |
-| Services | `#services` | cinco serviços, uma cor por categoria |
-| Photos | `#projects` | galeria por serviço, com visualizador |
+| Services | `#services` | cinco serviços, uma cor por categoria, e o botão para as fotos |
+| Photos | `#projects` | quadro único com todas as fotos, com visualizador |
 | FAQ | `#faq` | acordeão |
 | Get a free estimate | `#contact` | formulário |
 
@@ -91,61 +91,47 @@ horizontal no desktop (forte à esquerda, onde está o texto, quase transparente
 dobra) e vertical no celular, onde o ticket empilha e a área da imagem fica alta. Para
 trocar a arte basta substituir o arquivo mantendo o nome.
 
-## Fotos da galeria
+## Quadro de fotos
 
-As seis imagens em `assets/img/projects/` vêm do Pexels (licença livre, uso comercial
-permitido, sem exigência de atribuição). São imagens de referência, não obras executadas
-pela PRODESIGN, e a nota abaixo da galeria diz isso de forma explícita. Substitua por fotos
-reais assim que o cliente enviar.
+Pedido do cliente (Lucas, 13/10/2026): nada de separar fotos por serviço. A seção de serviços
+lista o que a empresa faz e termina no botão "See more photos", que leva a um quadro único
+com todas as fotos juntas. Drywall e taping entram no mesmo conjunto.
 
-| Arquivo | Categoria | Pexels |
-|---|---|---|
-| `interior-refresh.jpg` | Interior painting | 8583595 |
-| `ceilings-and-walls.jpg` | Interior painting | 5691677 |
-| `exterior-repaint.jpg` | Exterior painting | 39447777 |
-| `deck-cleaning.jpg` | Deck washing | 4469195 |
-| `trim-and-moldings.jpg` | Finish carpentry | 9036949 |
-| `drywall-finishing.jpg` | Drywall taping | 6474308 |
+Todas as imagens foram enviadas pelo cliente pelo WhatsApp. O mural dos depoimentos usa as
+mesmas fotos. As imagens de banco que ocupavam esses lugares foram removidas.
 
-Ao escolher novas imagens de banco, confira se não há uniforme ou logotipo de outra empresa
-visível. Uma boa candidata foi descartada por isso.
+São 28 fotos e um vídeo. Doze ficam à vista e o botão abre o resto. Esse número é a constante
+`FOTOS_A_VISTA` em `js/main.js`, e o `nth-child(n+13)` do CSS precisa acompanhá-la.
 
-## Publicar as fotos dos projetos
+### Publicar uma foto nova
 
-A galeria fica logo depois da faixa de números e é organizada por serviço. Cada cartão é
-uma categoria: a capa que aparece no grid e, escondida dentro dele, a lista das fotos que
-o visualizador abre.
-
-1. Coloque os arquivos em `assets/img/projects/`.
-2. No `index.html`, dentro da seção `#projects`, acrescente uma linha na `.cat__fotos` do
-   cartão da categoria:
+1. Gere a versão cheia em `assets/img/projects/` (até 1600px) e a miniatura com o mesmo nome
+   em `assets/img/projects/thumb/` (720px de largura, 1000px nas largas).
+2. Acrescente um item na lista `#fotosGrade`, no `index.html`:
 
 ```html
-<ul class="cat__fotos" hidden>
-  <li data-src="assets/img/projects/sala-antes-depois.jpg"
-      data-alt="Sala pintada em tom claro após o serviço"></li>
-</ul>
+<li class="foto">
+  <button class="foto__btn" type="button" data-src="assets/img/projects/casa-azul.jpg" data-legenda="Exterior work">
+    <img class="foto__img" src="assets/img/projects/thumb/casa-azul.jpg" alt="Casa pintada de azul" loading="lazy" decoding="async">
+  </button>
+</li>
 ```
 
-Só isso. O contador do cartão ("4 photos") e os pontos de navegação do visualizador saem
-da própria lista, então não existe número escrito à mão para desencontrar. Com uma foto
-só, as setas e os pontos somem.
+O contador do botão e a navegação do visualizador saem da própria lista. A legenda aparece no
+topo do visualizador e precisa ter tradução em `js/pt.js`.
 
-A capa do cartão é a `<img class="cat__img">`, separada da lista: pode ser a melhor foto
-do conjunto ou uma imagem só para o grid.
+`foto--alta` ocupa duas linhas (foto em pé) e `foto--larga` ocupa duas colunas. A grade usa
+`grid-auto-flow: dense` e a ordem foi montada para fechar sem buraco com quatro e com duas
+colunas: o total de células, somando 1 por foto, mais 1 por `foto--alta` e mais 1 por
+`foto--larga`, precisa ser múltiplo de 4, inclusive nas doze primeiras.
 
-Para criar uma categoria nova, copie um `<li class="cat">` inteiro e troque o
-`data-cat-nome` do botão, o `.cat__nome` e a lista. `cat--wide` faz o cartão ocupar duas
-colunas.
-
-Proporção recomendada: 4:3 nos cartões normais e 16:9 no cartão largo. O corte é por
-`object-fit: cover`, então imagens maiores funcionam. Dentro do visualizador a foto
-aparece inteira, sem corte.
+Para um vídeo, troque `data-src` por `data-video` e acrescente o `.foto__play` dentro do botão.
 
 ### O visualizador
 
 Fecha com Esc, com clique fora ou no X. As setas do teclado e o arrastar do dedo trocam
-de foto, e a navegação é circular. Ao fechar, o foco volta para o cartão que abriu.
+de foto, e a navegação é circular e passa por tudo, mesmo com o quadro recolhido. Ao fechar, o
+foco volta para a foto que abriu. O vídeo toca sozinho, exceto para quem pede menos movimento.
 
 ## Cartão de compartilhamento
 
@@ -199,9 +185,9 @@ e-mail e a marca PRODESIGN aparecem aí de propósito: não devem ser traduzidos
 
 ### Texto escrito pelo script
 
-O contador de fotos de cada categoria ("3 photos" / "3 fotos") é gerado em JavaScript, não
-está no HTML. Elementos assim levam `data-sem-traducao` e se inscrevem em `aoTrocarIdioma`
-para se reescreverem sozinhos quando o idioma muda.
+O rótulo do botão do quadro ("See more photos (17)") e a legenda do visualizador são gerados
+em JavaScript, não estão no HTML. Elementos assim levam `data-sem-traducao` e se inscrevem em
+`aoTrocarIdioma` para se reescreverem sozinhos quando o idioma muda.
 
 ## Formulários
 

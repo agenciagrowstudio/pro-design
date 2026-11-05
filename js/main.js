@@ -514,43 +514,39 @@
   }
 
   /* =======================================================
-     7. GALERIA POR CATEGORIA
-     Cada cartao guarda a propria lista de fotos em uma <ul>
-     escondida. O visualizador e um so, e e montado na hora com
-     a lista do cartao que foi aberto.
+     7. QUADRO DE FOTOS
+     Tudo numa grade so. O album do visualizador sai dos proprios
+     botoes da grade, entao basta um <li> novo no HTML para a foto
+     entrar no quadro, no contador e na navegacao. Doze ficam a
+     vista; o botao abre o resto.
      ======================================================= */
   var visor = document.getElementById('visor');
   var visorImg = document.getElementById('visorImg');
+  var visorVideo = document.getElementById('visorVideo');
   var visorTitulo = document.getElementById('visorTitulo');
   var visorContador = document.getElementById('visorContador');
-  var visorPontos = document.getElementById('visorPontos');
+  var grade = document.getElementById('fotosGrade');
+  var botaoMais = document.getElementById('fotosMais');
+  var textoMais = document.getElementById('fotosMaisTexto');
 
+  var FOTOS_A_VISTA = 12;
   var album = [];
   var indice = 0;
   var origem = null;
 
-  function lerFotos(cartao) {
-    var itens = cartao.querySelectorAll('.cat__fotos li');
-    return Array.prototype.map.call(itens, function (li) {
-      return {
-        src: li.getAttribute('data-src'),
-        alt: li.getAttribute('data-alt') || ''
-      };
-    }).filter(function (f) { return f.src; });
+  function escreverLegenda() {
+    var foto = album[indice];
+    if (!foto) return;
+    visorTitulo.textContent = idiomaAtual === 'pt'
+      ? (dicionario[foto.legenda] || foto.legenda)
+      : foto.legenda;
   }
 
-  function montarPontos() {
-    visorPontos.innerHTML = '';
-    album.forEach(function (_, i) {
-      var li = document.createElement('li');
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'visor__ponto';
-      b.setAttribute('aria-label', 'Photo ' + (i + 1));
-      b.addEventListener('click', function () { mostrar(i); });
-      li.appendChild(b);
-      visorPontos.appendChild(li);
-    });
+  function pararVideo() {
+    visorVideo.pause();
+    visorVideo.removeAttribute('src');
+    visorVideo.load();
+    visorVideo.hidden = true;
   }
 
   function mostrar(i) {
@@ -559,26 +555,33 @@
     indice = (i + album.length) % album.length;
 
     var foto = album[indice];
-    visorImg.setAttribute('src', foto.src);
-    visorImg.setAttribute('alt', foto.alt);
+    pararVideo();
+
+    if (foto.video) {
+      visorImg.hidden = true;
+      visorImg.removeAttribute('src');
+      visorVideo.setAttribute('src', foto.video);
+      visorVideo.setAttribute('aria-label', foto.alt);
+      visorVideo.hidden = false;
+      // Quem pede menos movimento aperta o play por conta propria
+      if (!reduzirMovimento) visorVideo.play().catch(function () {});
+    } else {
+      visorImg.hidden = false;
+      visorImg.setAttribute('src', foto.src);
+      visorImg.setAttribute('alt', foto.alt);
+    }
+
+    escreverLegenda();
     visorContador.textContent = (indice + 1) + ' / ' + album.length;
 
-    visorPontos.querySelectorAll('.visor__ponto').forEach(function (b, n) {
-      b.classList.toggle('is-ativa', n === indice);
-      if (n === indice) b.setAttribute('aria-current', 'true');
-      else b.removeAttribute('aria-current');
-    });
+    // Adianta a proxima foto para a troca nao piscar
+    var proxima = album[(indice + 1) % album.length];
+    if (proxima.src) new Image().src = proxima.src;
   }
 
-  function abrirVisor(cartao, botao) {
-    album = lerFotos(cartao);
-    if (!album.length) return;
-
+  function abrirVisor(i, botao) {
     origem = botao;
-    visorTitulo.textContent = botao.getAttribute('data-cat-nome') || '';
-    visor.classList.toggle('tem-uma', album.length < 2);
-    montarPontos();
-    mostrar(0);
+    mostrar(i);
 
     visor.hidden = false;
     document.body.classList.add('visor-aberto');
@@ -591,73 +594,59 @@
     visor.hidden = true;
     document.body.classList.remove('visor-aberto');
     visorImg.removeAttribute('src');
-    // O foco volta para o cartao que abriu, senao ele cairia no topo
+    pararVideo();
+    // O foco volta para a foto que abriu, senao ele cairia no topo
     if (origem) origem.focus();
     origem = null;
   }
 
-  if (visor) {
-    document.querySelectorAll('.cat').forEach(function (cartao) {
-      var botao = cartao.querySelector('.cat__btn');
-      var qtd = cartao.querySelector('.cat__qtd');
-      var fotos = lerFotos(cartao);
-
-      // O contador sai da propria lista: assim nao ha numero
-      // escrito na mao para desencontrar quando as fotos mudarem.
-      function escreverContador(idioma) {
-        if (!qtd) return;
-        var unidade = idioma === 'pt'
-          ? (fotos.length === 1 ? ' foto' : ' fotos')
-          : (fotos.length === 1 ? ' photo' : ' photos');
-        qtd.textContent = fotos.length + unidade;
-      }
-
-      escreverContador(idiomaAtual);
-      aoTrocarIdioma.push(escreverContador);
-      if (!botao || !fotos.length) return;
-
-      botao.addEventListener('click', function () { abrirVisor(cartao, botao); });
-
-      // Passar o mouse folheia as fotos da categoria na propria
-      // capa. As imagens so sao baixadas no primeiro hover, para
-      // nao custar nada a quem apenas rola a pagina.
-      var capa = cartao.querySelector('.cat__img');
-      if (!capa || fotos.length < 2 || reduzirMovimento) return;
-
-      var original = capa.getAttribute('src');
-      var relogio = null;
-      var vez = 0;
-      var carregadas = false;
-
-      function preCarregar() {
-        if (carregadas) return;
-        carregadas = true;
-        fotos.forEach(function (f) { new Image().src = f.src; });
-      }
-
-      function trocar(src) {
-        capa.style.opacity = '0';
-        setTimeout(function () {
-          capa.setAttribute('src', src);
-          capa.style.opacity = '';
-        }, 180);
-      }
-
-      botao.addEventListener('mouseenter', function () {
-        preCarregar();
-        vez = 0;
-        relogio = setInterval(function () {
-          vez = (vez + 1) % fotos.length;
-          trocar(fotos[vez].src);
-        }, 1100);
-      });
-
-      botao.addEventListener('mouseleave', function () {
-        clearInterval(relogio);
-        relogio = null;
-        if (capa.getAttribute('src') !== original) trocar(original);
-      });
+  if (visor && grade) {
+    album = Array.prototype.map.call(grade.querySelectorAll('.foto__btn'), function (botao, i) {
+      var img = botao.querySelector('img');
+      botao.addEventListener('click', function () { abrirVisor(i, botao); });
+      return {
+        src: botao.getAttribute('data-src'),
+        video: botao.getAttribute('data-video'),
+        alt: img ? img.getAttribute('alt') : '',
+        legenda: botao.getAttribute('data-legenda') || ''
+      };
     });
+
+    aoTrocarIdioma.push(escreverLegenda);
+
+    // Sem script o quadro fica inteiro; o recolhimento e so aqui
+    var escondidas = album.length - FOTOS_A_VISTA;
+
+    if (botaoMais && escondidas > 0) {
+      var aberto = false;
+
+      var escreverMais = function (idioma) {
+        var pt = idioma === 'pt';
+        if (aberto) textoMais.textContent = pt ? 'Ver menos fotos' : 'See fewer photos';
+        else textoMais.textContent = (pt ? 'Ver mais fotos' : 'See more photos') + ' (' + escondidas + ')';
+      };
+
+      grade.classList.add('is-recolhida');
+      botaoMais.hidden = false;
+      escreverMais(idiomaAtual);
+      aoTrocarIdioma.push(escreverMais);
+
+      botaoMais.addEventListener('click', function () {
+        aberto = !aberto;
+        grade.classList.toggle('is-recolhida', !aberto);
+        grade.classList.toggle('is-aberta', aberto);
+        botaoMais.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+        escreverMais(idiomaAtual);
+
+        // Ao recolher, a pagina encolhe por cima de quem esta lendo:
+        // volta para o comeco do quadro em vez de cair no FAQ.
+        if (!aberto) {
+          var cabecalho = document.querySelector('.header');
+          var folga = (cabecalho ? cabecalho.offsetHeight : 0) + 24;
+          window.scrollTo(0, grade.getBoundingClientRect().top + window.pageYOffset - folga);
+        }
+      });
+    }
 
     visor.querySelectorAll('[data-fechar]').forEach(function (el) {
       el.addEventListener('click', fecharVisor);

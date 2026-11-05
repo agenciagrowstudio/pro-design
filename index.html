@@ -105,6 +105,7 @@
   <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></symbol>
   <symbol id="i-house" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .71-1.53l7-5.87a2 2 0 0 1 2.58 0l7 5.87A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
   <symbol id="i-ruler" viewBox="0 0 24 24"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></symbol>
   <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></symbol>
 
 </defs>
@@ -357,112 +358,6 @@
   </div>
 </section>
 
-<!-- ===== Galeria por servico =====
-     Cada cartao e uma categoria e abre o visualizador com as fotos
-     daquela categoria. Para adicionar uma foto, basta uma linha
-     nova na lista .cat__fotos do cartao: o contador e a navegacao
-     se ajustam sozinhos. A capa do cartao e uma imagem a parte,
-     entao pode ser a melhor foto do conjunto. -->
-<section class="section gallery" id="projects">
-  <div class="wrap">
-    <header class="section__head">
-      <div>
-        <p class="eyebrow">The work</p>
-        <h2 class="section__title">Five services.<br>One crew.</h2>
-      </div>
-      <div class="section__aside">
-        <p class="section__intro">
-          Painting inside and out, finish carpentry, drywall and deck washing, all done by
-          the same crew. Nothing gets lost between trades, and the finish matches from the
-          baseboard to the ceiling. Open a service to see the work.
-        </p>
-        <a class="link-arrow" href="#contact">
-          Get a free estimate
-          <svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>
-        </a>
-      </div>
-    </header>
-
-    <ul class="cats">
-      <li class="cat" style="grid-area: a">
-        <button class="cat__btn" type="button" data-cat-nome="Interior painting">
-          <img class="cat__img" src="assets/img/projects/interior-painting-crew.jpg" alt="" loading="lazy" decoding="async">
-          <span class="cat__meta">
-            <span class="cat__nome">Interior painting</span>
-            <span class="cat__qtd" data-sem-traducao></span>
-          </span>
-        </button>
-        <ul class="cat__fotos" hidden>
-          <li data-src="assets/img/projects/interior-painting-crew.jpg" data-alt="Two painters rolling fresh paint on the walls and ceiling of a bright room"></li>
-          <li data-src="assets/img/projects/interior-prep-work.jpg" data-alt="Room prepared for painting with drop cloths, ladder and open ceiling"></li>
-        </ul>
-      </li>
-
-      <li class="cat" style="grid-area: b">
-        <button class="cat__btn" type="button" data-cat-nome="Exterior painting">
-          <img class="cat__img" src="assets/img/projects/exterior-brick-facade.jpg" alt="" loading="lazy" decoding="async">
-          <span class="cat__meta">
-            <span class="cat__nome">Exterior painting</span>
-            <span class="cat__qtd" data-sem-traducao></span>
-          </span>
-        </button>
-        <ul class="cat__fotos" hidden>
-          <li data-src="assets/img/projects/exterior-brick-facade.jpg" data-alt="Crew on scaffolding painting the trim of a brick house"></li>
-          <li data-src="assets/img/projects/exterior-stucco-wall.jpg" data-alt="Painters rolling a fresh coat on the exterior wall of a light stucco home"></li>
-          <li data-src="assets/img/projects/exterior-facade-painting.jpg" data-alt="Two painters with rollers on extension poles working on a white facade"></li>
-        </ul>
-      </li>
-
-      <li class="cat" style="grid-area: c">
-        <button class="cat__btn" type="button" data-cat-nome="Finish carpentry">
-          <img class="cat__img" src="assets/img/projects/carpentry-kitchen-cabinets.jpg" alt="" loading="lazy" decoding="async">
-          <span class="cat__meta">
-            <span class="cat__nome">Finish carpentry</span>
-            <span class="cat__qtd" data-sem-traducao></span>
-          </span>
-        </button>
-        <ul class="cat__fotos" hidden>
-          <li data-src="assets/img/projects/carpentry-kitchen-cabinets.jpg" data-alt="Carpenter fitting the door of a wall cabinet in a kitchen"></li>
-          <li data-src="assets/img/projects/carpentry-built-ins.jpg" data-alt="Carpenter assembling a built in shelving unit in a living room"></li>
-          <li data-src="assets/img/projects/carpentry-cutting.jpg" data-alt="Carpenter cutting a board with a circular saw on a work stand"></li>
-          <li data-src="assets/img/projects/carpentry-kitchen-build.jpg" data-alt="Crew installing cabinets and countertops in a kitchen under construction"></li>
-          <li data-src="assets/img/projects/carpentry-kitchen-island.jpg" data-alt="Two carpenters setting a kitchen island in place"></li>
-        </ul>
-      </li>
-
-      <li class="cat" style="grid-area: d">
-        <button class="cat__btn" type="button" data-cat-nome="Drywall taping">
-          <img class="cat__img" src="assets/img/projects/drywall-ceiling-install.jpg" alt="" loading="lazy" decoding="async">
-          <span class="cat__meta">
-            <span class="cat__nome">Drywall taping</span>
-            <span class="cat__qtd" data-sem-traducao></span>
-          </span>
-        </button>
-        <ul class="cat__fotos" hidden>
-          <li data-src="assets/img/projects/drywall-ceiling-install.jpg" data-alt="Two workers lifting a drywall panel into a ceiling"></li>
-          <li data-src="assets/img/projects/drywall-board-install.jpg" data-alt="Worker carrying a drywall board to a framed wall"></li>
-          <li data-src="assets/img/projects/drywall-ceiling-grid.jpg" data-alt="Worker fitting a panel into a suspended ceiling grid"></li>
-        </ul>
-      </li>
-
-      <li class="cat" style="grid-area: e">
-        <button class="cat__btn" type="button" data-cat-nome="Deck washing">
-          <img class="cat__img" src="assets/img/projects/deck-pressure-wash.jpg" alt="" loading="lazy" decoding="async">
-          <span class="cat__meta">
-            <span class="cat__nome">Deck washing</span>
-            <span class="cat__qtd" data-sem-traducao></span>
-          </span>
-        </button>
-        <ul class="cat__fotos" hidden>
-          <li data-src="assets/img/projects/deck-pressure-wash.jpg" data-alt="Pressure washing a wooden deck, clean boards next to weathered ones"></li>
-          <li data-src="assets/img/projects/deck-wash-backyard.jpg" data-alt="Worker pressure washing a backyard deck"></li>
-          <li data-src="assets/img/projects/driveway-pressure-wash.jpg" data-alt="Pressure washing the driveway in front of a garage"></li>
-        </ul>
-      </li>
-    </ul>
-  </div>
-</section>
-
 <!-- ===== Sobre, agora a segunda secao clara ===== -->
 <section class="section about" id="about">
   <div class="wrap">
@@ -594,6 +489,195 @@
         <a class="svc__cta" href="#contact">Get an estimate <svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a>
       </li>
     </ul>
+
+    <div class="svc__mais">
+      <a class="btn btn--solid btn--lg" href="#projects">
+        See more photos
+        <svg class="ico" aria-hidden="true"><use href="#i-image"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Fotos =====
+     Um quadro so, com tudo junto, sem separar por servico. Para
+     acrescentar uma foto, basta um <li> novo na lista: o contador e o
+     visualizador saem dela. foto--alta ocupa duas linhas e foto--larga
+     ocupa duas colunas. -->
+<section class="section gallery" id="projects">
+  <div class="wrap">
+    <header class="section__head">
+      <div>
+        <p class="eyebrow">Photos</p>
+        <h2 class="section__title">The work,<br>all in one place.</h2>
+      </div>
+      <div class="section__aside">
+        <p class="section__intro">
+          Exteriors, interiors, decks, carpentry and drywall, all from our own jobs.
+          Tap any photo to see it full size.
+        </p>
+        <a class="link-arrow" href="#contact">
+          Get a free estimate
+          <svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>
+        </a>
+      </div>
+    </header>
+
+    <ul class="fotos" id="fotosGrade">
+      <li class="foto foto--larga">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/exterior-cedar-modern.jpg" data-legenda="Exterior work">
+          <img class="foto__img" src="assets/img/projects/thumb/exterior-cedar-modern.jpg" alt="Modern two story home with cedar siding, a stone base and a glass garage door" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto foto--alta">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/exterior-new-build-van.jpg" data-legenda="Exterior work">
+          <img class="foto__img" src="assets/img/projects/thumb/exterior-new-build-van.jpg" alt="New construction home with ladders on the porch and a PRODESIGN van in front" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/interior-navy-dining.jpg" data-legenda="Interior painting">
+          <img class="foto__img" src="assets/img/projects/thumb/interior-navy-dining.jpg" alt="Dining room with navy walls, white wainscoting and a chandelier" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto foto--alta">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/deck-brown-stain.jpg" data-legenda="Deck">
+          <img class="foto__img" src="assets/img/projects/thumb/deck-brown-stain.jpg" alt="Backyard deck with fresh brown boards and dark railings" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/drywall-pole-sanding.jpg" data-legenda="Drywall and taping">
+          <img class="foto__img" src="assets/img/projects/thumb/drywall-pole-sanding.jpg" alt="Finisher sanding taped ceiling seams with a pole sander" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/interior-gray-built-ins.jpg" data-legenda="Interior painting">
+          <img class="foto__img" src="assets/img/projects/thumb/interior-gray-built-ins.jpg" alt="Gray room with white built in shelves and hardwood floors" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/exterior-pool-before.jpg" data-legenda="Exterior painting, before">
+          <img class="foto__img" src="assets/img/projects/thumb/exterior-pool-before.jpg" alt="Tan house with a covered pool before repainting, ladder against the wall" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/exterior-pool-after.jpg" data-legenda="Exterior painting, after">
+          <img class="foto__img" src="assets/img/projects/thumb/exterior-pool-after.jpg" alt="The same house after repainting, in dark navy with white trim, next to the pool" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto foto--alta">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/interior-blue-built-in-desk.jpg" data-legenda="Interior painting">
+          <img class="foto__img" src="assets/img/projects/thumb/interior-blue-built-in-desk.jpg" alt="Blue built in desk and cabinets with a wood top" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/exterior-cedar-garage.jpg" data-legenda="Exterior work">
+          <img class="foto__img" src="assets/img/projects/thumb/exterior-cedar-garage.jpg" alt="Cedar sided garage with a metal roof and a ladder against the wall" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/exterior-cream-colonial.jpg" data-legenda="Exterior work">
+          <img class="foto__img" src="assets/img/projects/thumb/exterior-cream-colonial.jpg" alt="Cream colonial home with a ladder at the front and white hydrangeas" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/exterior-gray-colonial.jpg" data-legenda="Exterior work">
+          <img class="foto__img" src="assets/img/projects/thumb/exterior-gray-colonial.jpg" alt="Gray shingle colonial with white trim and drop cloths protecting the lawn" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/exterior-garage-before.jpg" data-legenda="Exterior painting, before">
+          <img class="foto__img" src="assets/img/projects/thumb/exterior-garage-before.jpg" alt="Two car garage with white doors and tan siding before repainting" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/exterior-garage-after.jpg" data-legenda="Exterior painting, after">
+          <img class="foto__img" src="assets/img/projects/thumb/exterior-garage-after.jpg" alt="The same garage after repainting, in dark navy with dark doors and white trim" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto foto--alta">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/interior-green-mudroom.jpg" data-legenda="Cabinet painting">
+          <img class="foto__img" src="assets/img/projects/thumb/interior-green-mudroom.jpg" alt="Mudroom with built in cabinets and a bench painted sage green" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto foto--alta">
+        <button class="foto__btn" type="button" data-video="assets/video/interior-cabinet-spray.mp4" data-legenda="Cabinet painting">
+          <img class="foto__img" src="assets/img/projects/thumb/interior-cabinet-spray.jpg" alt="Time lapse of a painter spraying built in cabinets" loading="lazy" decoding="async">
+          <span class="foto__play"><svg class="ico" aria-hidden="true"><use href="#i-play"/></svg></span>
+        </button>
+      </li>
+      <li class="foto foto--larga">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/interior-navy-open-plan.jpg" data-legenda="Interior painting">
+          <img class="foto__img" src="assets/img/projects/thumb/interior-navy-open-plan.jpg" alt="Open plan rooms with navy walls, white wainscoting and hardwood floors" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto foto--alta">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/exterior-new-build-siding.jpg" data-legenda="Exterior work">
+          <img class="foto__img" src="assets/img/projects/thumb/exterior-new-build-siding.jpg" alt="Three story new build on raised framing during siding" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto foto--alta">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/deck-gray-boards.jpg" data-legenda="Deck painting and carpentry">
+          <img class="foto__img" src="assets/img/projects/thumb/deck-gray-boards.jpg" alt="Deck with light gray painted boards and white railings" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto foto--larga">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/deck-white-lattice.jpg" data-legenda="Deck painting and carpentry">
+          <img class="foto__img" src="assets/img/projects/thumb/deck-white-lattice.jpg" alt="Deck with a white railing and lattice skirting on a sunny day" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/exterior-white-new-build.jpg" data-legenda="Exterior work">
+          <img class="foto__img" src="assets/img/projects/thumb/exterior-white-new-build.jpg" alt="White new build with masked windows ready for finishing" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/drywall-basement-taped.jpg" data-legenda="Drywall and taping">
+          <img class="foto__img" src="assets/img/projects/thumb/drywall-basement-taped.jpg" alt="Basement with taped and mudded walls and ceiling" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto foto--alta">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/drywall-crew-on-stilts.jpg" data-legenda="Drywall and taping">
+          <img class="foto__img" src="assets/img/projects/thumb/drywall-crew-on-stilts.jpg" alt="Two finishers on stilts taping the ceiling of a hallway" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/deck-white-stairs.jpg" data-legenda="Deck painting and carpentry">
+          <img class="foto__img" src="assets/img/projects/thumb/deck-white-stairs.jpg" alt="White deck stairs and railings with lattice skirting" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/carpentry-shingle-crew.jpg" data-legenda="Carpentry">
+          <img class="foto__img" src="assets/img/projects/thumb/carpentry-shingle-crew.jpg" alt="Crew on ladders repairing the back of a cedar shingle house" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/carpentry-shingle-yard.jpg" data-legenda="Carpentry">
+          <img class="foto__img" src="assets/img/projects/thumb/carpentry-shingle-yard.jpg" alt="Cedar shingle house and garage with ladders laid out in the yard" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/drywall-taped-open-room.jpg" data-legenda="Drywall and taping">
+          <img class="foto__img" src="assets/img/projects/thumb/drywall-taped-open-room.jpg" alt="Large room with taped drywall and plastic protecting the floor" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/drywall-taped-walls.jpg" data-legenda="Drywall and taping">
+          <img class="foto__img" src="assets/img/projects/thumb/drywall-taped-walls.jpg" alt="Room with fresh tape and mud on the walls and ceiling" loading="lazy" decoding="async">
+        </button>
+      </li>
+      <li class="foto">
+        <button class="foto__btn" type="button" data-src="assets/img/projects/interior-tan-coffered.jpg" data-legenda="Interior painting">
+          <img class="foto__img" src="assets/img/projects/thumb/interior-tan-coffered.jpg" alt="Living room with tan walls, a white coffered ceiling and a fireplace" loading="lazy" decoding="async">
+        </button>
+      </li>
+    </ul>
+
+    <div class="fotos__mais">
+      <button class="btn btn--solid btn--lg" type="button" id="fotosMais" aria-controls="fotosGrade" aria-expanded="false" hidden>
+        <span id="fotosMaisTexto" data-sem-traducao></span>
+        <svg class="ico" aria-hidden="true"><use href="#i-arrow-down"/></svg>
+      </button>
+    </div>
   </div>
 </section>
 
@@ -646,30 +730,30 @@
 
     <div class="depo__mural" aria-hidden="true">
       <div class="depo__col">
-        <img src="assets/img/projects/exterior-brick-facade.jpg" alt="Crew painting the trim of a brick house" loading="lazy" decoding="async">
-        <img src="assets/img/projects/carpentry-kitchen-cabinets.jpg" alt="Carpenter fitting a kitchen cabinet door" loading="lazy" decoding="async">
+        <img src="assets/img/projects/thumb/exterior-cream-colonial.jpg" alt="Cream colonial home with white hydrangeas" loading="lazy" decoding="async">
+        <img src="assets/img/projects/thumb/interior-green-mudroom.jpg" alt="Mudroom cabinets painted sage green" loading="lazy" decoding="async">
       </div>
       <div class="depo__col">
-        <img src="assets/img/projects/interior-painting-crew.jpg" alt="Painters working on the walls of a bright room" loading="lazy" decoding="async">
+        <img src="assets/img/projects/thumb/interior-navy-dining.jpg" alt="Dining room with navy walls" loading="lazy" decoding="async">
       </div>
       <div class="depo__col">
-        <img src="assets/img/projects/drywall-ceiling-install.jpg" alt="Workers lifting a drywall panel into a ceiling" loading="lazy" decoding="async">
+        <img src="assets/img/projects/thumb/drywall-pole-sanding.jpg" alt="Finisher sanding a taped ceiling" loading="lazy" decoding="async">
       </div>
       <div class="depo__col">
-        <img src="assets/img/projects/exterior-stucco-wall.jpg" alt="Painters rolling a coat on a stucco wall" loading="lazy" decoding="async">
+        <img src="assets/img/projects/thumb/exterior-garage-after.jpg" alt="Garage repainted in dark navy" loading="lazy" decoding="async">
       </div>
       <div class="depo__col">
-        <img src="assets/img/projects/carpentry-built-ins.jpg" alt="Carpenter assembling a built in shelving unit" loading="lazy" decoding="async">
+        <img src="assets/img/projects/thumb/interior-gray-built-ins.jpg" alt="White built in shelves in a gray room" loading="lazy" decoding="async">
       </div>
       <div class="depo__col">
-        <img src="assets/img/projects/interior-prep-work.jpg" alt="Room prepared for painting" loading="lazy" decoding="async">
+        <img src="assets/img/projects/thumb/exterior-pool-after.jpg" alt="House repainted in navy next to the pool" loading="lazy" decoding="async">
       </div>
       <div class="depo__col">
-        <img src="assets/img/projects/deck-wash-backyard.jpg" alt="Worker pressure washing a backyard deck" loading="lazy" decoding="async">
+        <img src="assets/img/projects/thumb/deck-white-stairs.jpg" alt="White deck stairs and railings" loading="lazy" decoding="async">
       </div>
       <div class="depo__col">
-        <img src="assets/img/projects/drywall-board-install.jpg" alt="Worker carrying a drywall board" loading="lazy" decoding="async">
-        <img src="assets/img/projects/exterior-facade-painting.jpg" alt="Painters with rollers on a white facade" loading="lazy" decoding="async">
+        <img src="assets/img/projects/thumb/drywall-crew-on-stilts.jpg" alt="Two finishers on stilts taping a ceiling" loading="lazy" decoding="async">
+        <img src="assets/img/projects/thumb/exterior-cedar-modern.jpg" alt="Modern home with cedar siding" loading="lazy" decoding="async">
       </div>
 
       <div class="depo__centro">
@@ -932,13 +1016,13 @@
 
 <!-- ===== Visualizador da galeria =====
      Um so para a pagina inteira. O conteudo e montado pelo script
-     a partir da lista de fotos do cartao que foi aberto. -->
+     a partir das fotos e do video do quadro. -->
 <div class="visor" id="visor" hidden role="dialog" aria-modal="true" aria-labelledby="visorTitulo">
   <div class="visor__fundo" data-fechar></div>
 
   <div class="visor__caixa">
     <header class="visor__topo">
-      <p class="visor__titulo" id="visorTitulo"></p>
+      <p class="visor__titulo" id="visorTitulo" data-sem-traducao></p>
       <button class="visor__fechar" type="button" data-fechar aria-label="Close the gallery">
         <svg class="ico" aria-hidden="true"><use href="#i-x"/></svg>
       </button>
@@ -946,6 +1030,7 @@
 
     <div class="visor__palco">
       <img class="visor__img" id="visorImg" alt="">
+      <video class="visor__video" id="visorVideo" controls playsinline loop preload="none" hidden></video>
 
       <button class="visor__seta visor__seta--ant" type="button" data-passo="-1" aria-label="Previous photo">
         <svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg>
@@ -956,8 +1041,7 @@
     </div>
 
     <footer class="visor__rodape">
-      <p class="visor__contador" id="visorContador" role="status"></p>
-      <ul class="visor__pontos" id="visorPontos"></ul>
+      <p class="visor__contador" id="visorContador" role="status" data-sem-traducao></p>
     </footer>
   </div>
 </div>
